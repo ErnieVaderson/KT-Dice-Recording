@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kill Team Dice Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        tactical: {
+                            900: '#070b14',        /* Deep tactical blue background */
+                            800: '#0f172a',        /* Dark blue surface */
+                            700: '#1e293b',        /* Border & secondary dark */
+                            600: '#334155',
+                            myTeam: '#3b82f6',     /* Blue for My Team */
+                            myTeamHover: '#2563eb',
+                            opponent: '#f97316',   /* Orange for Opponent */
+                            opponentHover: '#ea580c',
+                            success: '#22c55e',
+                            crit: '#38bdf8',
+                            danger: '#ef4444'      /* Red for Attack / Danger */
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #070b14;
+            color: #f3f4f6;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .tactile-btn {
+            transition: all 0.1s ease;
+        }
+        .tactile-btn:active {
+            transform: scale(0.95);
+        }
+        .kill-team-header {
+            background: linear-gradient(135deg, #070b14 0%, #0f172a 100%);
+            border-bottom: 2px solid #3b82f6;
+        }
+        .kill-team-badge {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        .orange-glow {
+            box-shadow: 0 0 15px rgba(249, 115, 22, 0.25);
+        }
+        .blue-glow {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-tactical-900 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white">
+
+    <header class="sticky top-0 z-50 kill-team-header px-4 py-3 shadow-2xl">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-tactical-myTeam flex items-center justify-center text-white font-black text-base shadow-lg border border-blue-400">
+                    <i class="fa-solid fa-skull"></i>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-xs uppercase tracking-widest text-blue-400">Kill Team</h1>
+                    <p id="active-session-label" class="text-[11px] text-white font-black truncate max-w-[150px]">No Game Selected</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <div id="cloud-sync-status" class="text-[10px] text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-800/60 font-mono flex items-center space-x-1.5" title="Secure Cloud Account Storage">
+                    <i class="fa-solid fa-cloud-arrow-up text-[10px]"></i>
+                    <span id="cloud-status-text">Cloud Sync</span>
+                </div>
+                <button type="button" onclick="window.toggleArchiveModal()" class="px-2.5 py-1.5 rounded-xl bg-tactical-700/80 hover:bg-tactical-600 text-gray-300 text-xs font-bold transition border border-tactical-600 flex items-center space-x-1 shadow-md tactile-btn" title="Archived Games">
+                    <i class="fa-solid fa-box-archive text-xs"></i>
+                    <span id="archive-count-badge" class="text-[10px] bg-tactical-900 px-1.5 py-0.2 rounded-full font-mono">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-md w-full mx-auto p-4 pb-28 overflow-y-auto">
+
+        <!-- GAMES / SESSIONS VIEW -->
+        <section id="view-sessions" class="space-y-4">
+            <div class="kill-team-badge rounded-2xl p-4 shadow-xl relative overflow-hidden blue-glow">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-tactical-myTeam/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-2xl bg-tactical-myTeam/20 border border-tactical-myTeam/50 flex items-center justify-center text-tactical-myTeam text-xl shadow-inner">
+                        <i class="fa-solid fa-crosshairs"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-black text-sm text-white uppercase tracking-wider">Warhammer Kill Team</h2>
+                        <p class="text-[11px] text-gray-400">Secure Account Cloud-Saved Dice Odds</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam flex items-center">
+                    <i class="fa-solid fa-plus-circle mr-1.5"></i> Start New Game Session
+                </h3>
+                <div class="space-y-2.5">
+                    <input type="text" id="new-game-name" placeholder="e.g., Match 1 - Table 4" 
+                        class="w-full bg-tactical-900 border border-tactical-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-tactical-myTeam transition shadow-inner">
+                    <button type="button" onclick="window.createNewGameSession()" class="w-full py-3 bg-tactical-myTeam hover:bg-tactical-myTeamHover text-white font-black text-xs uppercase rounded-xl transition shadow-lg tactile-btn">
+                        Create Game
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-300 flex items-center">
+                    <i class="fa-solid fa-list mr-1.5"></i> Your Game Sessions
+                </h3>
+                <div id="sessions-list-container" class="space-y-2.5">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- LOGGER VIEW -->
+        <section id="view-logger" class="space-y-3.5 hidden">
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl px-4 py-3 shadow-lg backdrop-blur flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-1.5 text-gray-400 font-bold uppercase tracking-wider text-[10px]">
+                    <i class="fa-solid fa-dice text-blue-400"></i>
+                    <span>Logging for:</span>
+                </div>
+                <span id="logger-active-game-name" class="font-extrabold text-blue-400 truncate max-w-[200px]">No Game Selected</span>
+            </div>
+            
+            <div class="bg-tactical-800/90 p-1.5 rounded-2xl border border-tactical-700/80 shadow-lg backdrop-blur flex items-center justify-between">
+                <button type="button" onclick="window.setLoggerRole('my')" id="role-btn-my" class="flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn">
+                    <i class="fa-solid fa-user-shield mr-1"></i> My Team
+                </button>
+                <button type="button" onclick="window.setLoggerRole('opponent')" id="role-btn-opponent" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn">
+                    <i class="fa-solid fa-user-secret mr-1"></i> Opponent
+                </button>
+            </div>
+
+            <div class="bg-tactical-800/90 p-1.5 rounded-2xl border border-tactical-700/80 shadow-lg backdrop-blur flex items-center justify-between space-x-1.5">
+                <button type="button" onclick="window.setLoggerRollType('attack')" id="rolltype-btn-attack" class="flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-sword text-xs"></i>
+                    <span>Attack Roll</span>
+                </button>
+                <button type="button" onclick="window.setLoggerRollType('defense')" id="rolltype-btn-defense" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5">
+                    <i class="fa-solid fa-shield-halved text-xs"></i>
+                    <span>Defense Roll</span>
+                </button>
+            </div>
+
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+                <div class="flex items-center justify-between">
+                    <span id="label-success-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20">Success</span>
+                    <div class="grid grid-cols-5 gap-1.5 flex-1">
+                        <button type="button" onclick="window.setSuccessThreshold(2)" id="thresh-succ-2" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">2+</button>
+                        <button type="button" onclick="window.setSuccessThreshold(3)" id="thresh-succ-3" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">3+</button>
+                        <button type="button" onclick="window.setSuccessThreshold(4)" id="thresh-succ-4" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-myTeam border border-tactical-myTeam text-white shadow-md transition tactile-btn">4+</button>
+                        <button type="button" onclick="window.setSuccessThreshold(5)" id="thresh-succ-5" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">5+</button>
+                        <button type="button" onclick="window.setSuccessThreshold(6)" id="thresh-succ-6" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">6+</button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <span id="label-crit-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20">Critical</span>
+                    <div class="grid grid-cols-5 gap-1.5 flex-1">
+                        <button type="button" onclick="window.setCritThreshold('none')" id="thresh-crit-none" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">None</button>
+                        <button type="button" onclick="window.setCritThreshold(3)" id="thresh-crit-3" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">3+</button>
+                        <button type="button" onclick="window.setCritThreshold(4)" id="thresh-crit-4" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">4+</button>
+                        <button type="button" onclick="window.setCritThreshold(5)" id="thresh-crit-5" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">5+</button>
+                        <button type="button" onclick="window.setCritThreshold(6)" id="thresh-crit-6" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-myTeam border border-tactical-myTeam text-white shadow-md transition tactile-btn">6+</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-3 shadow-xl backdrop-blur flex items-center justify-between min-h-[58px]">
+                <div id="dice-sequence-container" class="flex flex-wrap gap-2 items-center flex-1 overflow-x-auto">
+                    <span class="text-xs text-gray-500 italic px-2">Tap 1-6 dice below...</span>
+                </div>
+                <span id="sequence-count-indicator" class="text-xs font-mono font-bold text-blue-400 pl-2 shrink-0">0 dice</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5">
+                <button type="button" onclick="window.tapDie(1)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-tactical-danger active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-tactical-danger" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+                <button type="button" onclick="window.tapDie(2)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-blue-400 active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-gray-200" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/></svg>
+                </button>
+                <button type="button" onclick="window.tapDie(3)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-blue-400 active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-gray-200" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>
+                </button>
+                <button type="button" onclick="window.tapDie(4)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-blue-400 active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-gray-200" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>
+                </button>
+                <button type="button" onclick="window.tapDie(5)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-blue-400 active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-gray-200" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>
+                </button>
+                <button type="button" onclick="window.tapDie(6)" class="h-24 rounded-2xl bg-tactical-800/90 border border-tactical-700/80 hover:border-tactical-crit active:scale-95 transition flex items-center justify-center shadow-lg backdrop-blur tactile-btn">
+                    <svg class="w-12 h-12 text-tactical-crit" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/></svg>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2.5 pt-2">
+                <button type="button" onclick="window.clearAllSequence()" class="py-3.5 rounded-2xl bg-tactical-800/90 hover:bg-tactical-700 border border-tactical-700/80 text-gray-300 font-extrabold text-xs uppercase tracking-wider transition shadow-lg backdrop-blur tactile-btn">
+                    Clear
+                </button>
+                <button type="button" onclick="window.clearCurrentSequence()" class="py-3.5 rounded-2xl bg-tactical-800/90 hover:bg-tactical-700 border border-tactical-700/80 text-gray-300 font-bold text-xs transition shadow-lg backdrop-blur flex items-center justify-center tactile-btn">
+                    <i class="fa-solid fa-arrow-left text-sm"></i>
+                </button>
+                <button type="button" onclick="window.confirmSequence()" id="confirm-btn" class="py-3.5 rounded-2xl bg-tactical-myTeam hover:bg-tactical-myTeamHover text-white font-black text-xs uppercase tracking-wider transition shadow-xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed tactile-btn" disabled>
+                    Confirm
+                </button>
+            </div>
+        </section>
+
+        <!-- DASHBOARD / CAREER STATS VIEW -->
+        <section id="view-dashboard" class="space-y-4 hidden">
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+                <div class="flex items-center justify-between">
+                    <button type="button" onclick="window.switchTab('sessions')" class="px-3 py-1.5 bg-tactical-700 hover:bg-tactical-600 text-tactical-myTeam rounded-xl text-xs font-bold transition border border-tactical-600 shadow flex items-center">
+                        <i class="fa-solid fa-chevron-left mr-1.5 text-[10px]"></i> Games
+                    </button>
+                    <div class="text-center">
+                        <h2 id="dash-session-name" class="text-sm font-black text-white truncate max-w-[160px]">Game 1</h2>
+                        <p id="dash-session-date" class="text-[10px] text-gray-400 font-mono mt-0.5">2026/10/12 • Active</p>
+                    </div>
+                    <button type="button" onclick="window.clearActiveSessionLogs()" class="px-3 py-1.5 bg-tactical-danger/20 hover:bg-tactical-danger/30 text-tactical-danger rounded-xl text-xs font-bold transition border border-tactical-danger/40 shadow flex items-center space-x-1" title="Clear Session Logs">
+                        <i class="fa-solid fa-rotate-right text-[10px]"></i>
+                        <span>Reset Logs</span>
+                    </button>
+                </div>
+
+                <div class="bg-tactical-900/80 rounded-xl p-3 border border-tactical-700/60 space-y-3">
+                    <div class="grid grid-cols-2 gap-2 text-center">
+                        <div>
+                            <span class="text-[10px] uppercase font-extrabold text-blue-400 block">My Team</span>
+                            <input type="text" id="input-my-faction" onchange="window.updateMatchMeta()" placeholder="e.g. Kommandos" 
+                                class="w-full bg-transparent text-center font-bold text-xs text-white border-b border-tactical-700 pb-1 mt-0.5 focus:outline-none focus:border-tactical-myTeam">
+                        </div>
+                        <div>
+                            <span class="text-[10px] uppercase font-extrabold text-orange-400 block">Opponent</span>
+                            <input type="text" id="input-opp-faction" onchange="window.updateMatchMeta()" placeholder="e.g. Intercession" 
+                                class="w-full bg-transparent text-center font-bold text-xs text-white border-b border-tactical-700 pb-1 mt-0.5 focus:outline-none focus:border-orange-500">
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-center space-x-3 pt-1">
+                        <span class="text-[10px] font-extrabold uppercase text-gray-400">Result:</span>
+                        <div class="flex space-x-1.5">
+                            <button type="button" onclick="window.setMatchResult('win')" id="res-btn-win" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Win</button>
+                            <button type="button" onclick="window.setMatchResult('loss')" id="res-btn-loss" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Loss</button>
+                            <button type="button" onclick="window.setMatchResult('draw')" id="res-btn-draw" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Draw</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ATTACK ROLLS SECTION -->
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center">
+                        <i class="fa-solid fa-sword text-tactical-danger mr-1.5"></i> Attack Rolls (1-6 Distribution)
+                    </h3>
+                    <div class="flex items-center space-x-3 text-[10px] font-bold">
+                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> My <span id="legend-attack-my-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> Opp <span id="legend-attack-opp-count" class="ml-1 font-mono">(0)</span></span>
+                    </div>
+                </div>
+
+                <div id="distribution-chart-attack" class="space-y-3 pt-2">
+                    <!-- Injected via JS -->
+                </div>
+                <div id="distribution-table-attack" class="space-y-2 pt-2 border-t border-tactical-700/60">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <!-- DEFENSE ROLLS SECTION -->
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center">
+                        <i class="fa-solid fa-shield-halved text-tactical-crit mr-1.5"></i> Defense Rolls (1-6 Distribution)
+                    </h3>
+                    <div class="flex items-center space-x-3 text-[10px] font-bold">
+                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> My <span id="legend-defense-my-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> Opp <span id="legend-defense-opp-count" class="ml-1 font-mono">(0)</span></span>
+                    </div>
+                </div>
+
+                <div id="distribution-chart-defense" class="space-y-3 pt-2">
+                    <!-- Injected via JS -->
+                </div>
+                <div id="distribution-table-defense" class="space-y-2 pt-2 border-t border-tactical-700/60">
+                    <!-- Injected via JS -->
+                </div>
+            </div>
+
+            <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center">
+                        <i class="fa-solid fa-scroll text-tactical-myTeam mr-1.5"></i> Roll Sequences Log
+                    </h3>
+                </div>
+                <div id="session-history-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    <p class="text-xs text-gray-500 text-center py-4">No dice sequences recorded in this game yet.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ARCHIVED GAMES MODAL -->
+    <div id="archive-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-tactical-800 border border-tactical-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-tactical-700 pb-3">
+                <h3 class="text-sm font-extrabold text-white flex items-center">
+                    <i class="fa-solid fa-box-archive text-tactical-myTeam mr-2"></i> Archived Games
+                </h3>
+                <button type="button" onclick="window.toggleArchiveModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="archived-games-list" class="space-y-2 max-h-60 overflow-y-auto">
+                <p class="text-xs text-gray-500 text-center py-4">No archived games.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- GAME OPTIONS MODAL -->
+    <div id="game-options-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-tactical-800 border border-tactical-700 rounded-2xl max-w-xs w-full p-4 space-y-3 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-tactical-700 pb-2.5">
+                <h3 id="modal-game-title" class="text-xs font-extrabold text-white truncate max-w-[200px]">Game Options</h3>
+                <button type="button" onclick="window.closeGameOptionsModal()" class="text-gray-400 hover:text-white text-xs">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-2">
+                <button type="button" onclick="window.modalActionMoveUp()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-gray-200 flex items-center justify-between transition">
+                    <span>Move Up</span>
+                    <i class="fa-solid fa-arrow-up text-tactical-myTeam"></i>
+                </button>
+                <button type="button" onclick="window.modalActionMoveDown()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-gray-200 flex items-center justify-between transition">
+                    <span>Move Down</span>
+                    <i class="fa-solid fa-arrow-down text-tactical-myTeam"></i>
+                </button>
+                <button type="button" onclick="window.modalActionArchive()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-yellow-400 flex items-center justify-between transition">
+                    <span>Archive Game</span>
+                    <i class="fa-solid fa-box-archive"></i>
+                </button>
+                <button type="button" onclick="window.modalActionDelete()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-tactical-danger flex items-center justify-between transition">
+                    <span>Delete Game</span>
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 bg-tactical-800/95 backdrop-blur-md border-t border-tactical-700/60 p-2 max-w-md mx-auto z-40 shadow-2xl">
+        <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="window.switchTab('sessions')" id="nav-btn-sessions" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow">
+                <i class="fa-solid fa-gamepad text-sm"></i>
+                <span>Games</span>
+            </button>
+            <button type="button" onclick="window.switchTab('logger')" id="nav-btn-logger" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-900/60 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-crosshairs text-sm"></i>
+                <span>Log</span>
+            </button>
+            <button type="button" onclick="window.switchTab('dashboard')" id="nav-btn-dashboard" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-900/60 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-chart-line text-sm"></i>
+                <span>Career Stats</span>
+            </button>
+        </div>
+    </footer>
+
+    <div id="toast" class="fixed top-16 left-1/2 -translate-x-1/2 bg-tactical-800 border border-blue-500 text-white px-4 py-2 rounded-xl shadow-2xl text-xs font-bold transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center space-x-2 backdrop-blur">
+        <i class="fa-solid fa-circle-info text-blue-400"></i>
+        <span id="toast-msg">Notification</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'killteam-dice-tracker-default';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+
+        let db = null;
+        let auth = null;
+        let userId = null;
+        let unsubscribeCloud = null;
+
+        let appData = {
+            activeSessionId: null,
+            sessions: []
+        };
+
+        let loggerState = {
+            role: 'my',
+            rollType: 'attack',
+            successThreshold: 4,
+            critThreshold: 6,
+            currentSequence: []
+        };
+
+        let modalTargetSessionId = null;
+
+        const pipSVGs = {
+            1: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3.5"/></svg>',
+            2: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="7" cy="7" r="3"/><circle cx="17" cy="17" r="3"/></svg>',
+            3: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>',
+            4: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>',
+            5: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="12" cy="12" r="2.5"/><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="18" r="2.5"/></svg>',
+            6: '<svg class="w-5 h-5 text-gray-300" viewBox="0 0 24 24" fill="currentColor"><circle cx="6" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="6" cy="19" r="2.5"/><circle cx="18" cy="5" r="2.5"/><circle cx="18" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/></svg>'
+        };
+
+        window.onload = async function() {
+            if (firebaseConfig) {
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                    userId = auth.currentUser?.uid || crypto.randomUUID();
+                    initCloudSync();
+                } catch (err) {
+                    console.warn("Cloud initialization fallback:", err);
+                    initLocalFallback();
+                }
+            } else {
+                initLocalFallback();
+            }
+        };
+
+        function initLocalFallback() {
+            const saved = localStorage.getItem('killteam_dice_tracker_data_v21');
+            if (saved) {
+                try {
+                    appData = JSON.parse(saved);
+                } catch (e) {
+                    console.error("Failed to parse saved data", e);
+                }
+            }
+            finalizeDataLoad();
+            const statusEl = document.getElementById('cloud-status-text');
+            if (statusEl) statusEl.innerText = 'Local Device';
+        }
+
+        function initCloudSync() {
+            if (!db || !userId) {
+                initLocalFallback();
+                return;
+            }
+
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v5');
+            
+            unsubscribeCloud = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const cloudData = docSnap.data();
+                    if (cloudData && cloudData.sessions) {
+                        appData = cloudData;
+                    }
+                } else {
+                    const defaultId = 'game_' + Date.now();
+                    appData = {
+                        activeSessionId: defaultId,
+                        sessions: [{
+                            id: defaultId,
+                            name: 'Game 1',
+                            date: new Date().toLocaleDateString('en-CA'),
+                            myFaction: 'My Team',
+                            oppFaction: 'Opponent',
+                            result: 'active',
+                            archived: false,
+                            rolls: []
+                        }]
+                    };
+                    saveAppData();
+                }
+                finalizeDataLoad();
+                const statusEl = document.getElementById('cloud-status-text');
+                if (statusEl) statusEl.innerText = 'Cloud Saved';
+            }, (error) => {
+                console.error("Cloud sync error:", error);
+                initLocalFallback();
+            });
+        }
+
+        function finalizeDataLoad() {
+            if (!appData.sessions || !Array.isArray(appData.sessions) || appData.sessions.length === 0) {
+                const defaultId = 'game_' + Date.now();
+                appData.sessions = [{
+                    id: defaultId,
+                    name: 'Game 1',
+                    date: new Date().toLocaleDateString('en-CA'),
+                    myFaction: 'My Team',
+                    oppFaction: 'Opponent',
+                    result: 'active',
+                    archived: false,
+                    rolls: []
+                }];
+                appData.activeSessionId = defaultId;
+                saveAppData();
+            } else {
+                appData.sessions.forEach(s => {
+                    if (s.archived === undefined) s.archived = false;
+                    s.rolls.forEach(r => {
+                        if (!r.rollType) r.rollType = 'attack';
+                    });
+                });
+                if (!appData.activeSessionId || !appData.sessions.find(s => s.id === appData.activeSessionId && !s.archived)) {
+                    const firstActive = appData.sessions.find(s => !s.archived);
+                    appData.activeSessionId = firstActive ? firstActive.id : null;
+                }
+            }
+
+            updateUI();
+            renderSessionsList();
+        }
+
+        async function saveAppData() {
+            localStorage.setItem('killteam_dice_tracker_data_v21', JSON.stringify(appData));
+
+            if (db && userId) {
+                try {
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v5');
+                    await setDoc(docRef, appData);
+                    const statusEl = document.getElementById('cloud-status-text');
+                    if (statusEl) statusEl.innerText = 'Cloud Saved';
+                } catch (e) {
+                    console.error("Cloud save failed:", e);
+                }
+            }
+        }
+
+        function getActiveSession() {
+            return appData.sessions.find(s => s.id === appData.activeSessionId) || appData.sessions.find(s => !s.archived) || appData.sessions[0];
+        }
+
+        window.switchTab = function(tabId) {
+            ['dashboard', 'logger', 'sessions'].forEach(t => {
+                const view = document.getElementById(`view-${t}`);
+                if (view) view.classList.add('hidden');
+                const btn = document.getElementById(`nav-btn-${t}`);
+                if (btn) {
+                    btn.className = "py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-900/60 text-gray-400 hover:text-white";
+                }
+            });
+
+            const targetView = document.getElementById(`view-${tabId}`);
+            if (targetView) targetView.classList.remove('hidden');
+            
+            const activeBtn = document.getElementById(`nav-btn-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow";
+            }
+
+            if (tabId === 'dashboard') {
+                updateUI();
+            } else if (tabId === 'sessions') {
+                renderSessionsList();
+            } else if (tabId === 'logger') {
+                const session = getActiveSession();
+                const loggerNameEl = document.getElementById('logger-active-game-name');
+                if (loggerNameEl) loggerNameEl.innerText = session ? session.name : 'No Game Selected';
+            }
+        };
+
+        window.setLoggerRole = function(role) {
+            loggerState.role = role;
+            const myBtn = document.getElementById('role-btn-my');
+            const oppBtn = document.getElementById('role-btn-opponent');
+            const successLabel = document.getElementById('label-success-text');
+            const critLabel = document.getElementById('label-crit-text');
+
+            if (role === 'my') {
+                myBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn";
+                oppBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn";
+                if (successLabel) successLabel.className = "text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20";
+                if (critLabel) critLabel.className = "text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20";
+            } else {
+                myBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn";
+                oppBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-opponent text-white shadow transition tactile-btn";
+                if (successLabel) successLabel.className = "text-xs font-extrabold uppercase tracking-wider text-tactical-opponent w-20";
+                if (critLabel) critLabel.className = "text-xs font-extrabold uppercase tracking-wider text-tactical-opponent w-20";
+            }
+            updateThresholdButtonStyles();
+        };
+
+        window.setLoggerRollType = function(rollType) {
+            loggerState.rollType = rollType;
+            const attackBtn = document.getElementById('rolltype-btn-attack');
+            const defenseBtn = document.getElementById('rolltype-btn-defense');
+
+            if (rollType === 'attack') {
+                attackBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5";
+                defenseBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5";
+            } else {
+                attackBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5";
+                defenseBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5";
+            }
+        };
+
+        function updateThresholdButtonStyles() {
+            const activeBgClass = loggerState.role === 'my' ? 'bg-tactical-myTeam border-tactical-myTeam' : 'bg-tactical-opponent border-tactical-opponent';
+            
+            for (let i = 2; i <= 6; i++) {
+                const btn = document.getElementById(`thresh-succ-${i}`);
+                if (btn) {
+                    if (i === loggerState.successThreshold) {
+                        btn.className = `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn`;
+                    } else {
+                        btn.className = "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
+                    }
+                }
+            }
+
+            ['none', 3, 4, 5, 6].forEach(v => {
+                const btn = document.getElementById(`thresh-crit-${v}`);
+                if (btn) {
+                    if (v === loggerState.critThreshold) {
+                        btn.className = `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn`;
+                    } else {
+                        btn.className = "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
+                    }
+                }
+            });
+        }
+
+        window.setSuccessThreshold = function(val) {
+            loggerState.successThreshold = val;
+            updateThresholdButtonStyles();
+        };
+
+        window.setCritThreshold = function(val) {
+            loggerState.critThreshold = val;
+            updateThresholdButtonStyles();
+        };
+
+        window.tapDie = function(val) {
+            loggerState.currentSequence.push(val);
+            renderSequencePreview();
+        };
+
+        window.clearCurrentSequence = function() {
+            if (loggerState.currentSequence.length > 0) {
+                loggerState.currentSequence.pop();
+                renderSequencePreview();
+            }
+        };
+
+        window.clearAllSequence = function() {
+            loggerState.currentSequence = [];
+            renderSequencePreview();
+            showToast("Cleared sequence");
+        };
+
+        function renderSequencePreview() {
+            const container = document.getElementById('dice-sequence-container');
+            const indicator = document.getElementById('sequence-count-indicator');
+            const confirmBtn = document.getElementById('confirm-btn');
+
+            if (!container || !indicator || !confirmBtn) return;
+
+            container.innerHTML = '';
+            indicator.innerText = `${loggerState.currentSequence.length} dice`;
+
+            if (loggerState.currentSequence.length === 0) {
+                container.innerHTML = `<span class="text-xs text-gray-500 italic px-2">Tap 1-6 dice below...</span>`;
+                confirmBtn.setAttribute('disabled', 'true');
+                return;
+            }
+
+            confirmBtn.removeAttribute('disabled');
+
+            loggerState.currentSequence.forEach((val) => {
+                let badgeColor = "bg-tactical-danger/20 text-tactical-danger border-tactical-danger/40";
+                if (val > 1) {
+                    const isCrit = loggerState.critThreshold !== 'none' && val >= loggerState.critThreshold;
+                    const isSucc = val >= loggerState.successThreshold;
+                    if (isCrit) {
+                        badgeColor = "bg-tactical-crit/20 text-tactical-crit border-tactical-crit/40";
+                    } else if (isSucc) {
+                        badgeColor = "bg-tactical-success/20 text-tactical-success border-tactical-success/40";
+                    } else {
+                        badgeColor = "bg-tactical-900 text-gray-400 border-tactical-700";
+                    }
+                }
+
+                const pill = document.createElement('div');
+                pill.className = `flex items-center space-x-1 px-2.5 py-1 rounded-xl border font-mono font-black text-xs ${badgeColor} shadow-sm`;
+                pill.innerHTML = `<span>[${val}]</span>`;
+                container.appendChild(pill);
+            });
+        }
+
+        window.confirmSequence = function() {
+            if (loggerState.currentSequence.length === 0) return;
+
+            const session = getActiveSession();
+            if (!session) return;
+            
+            let hits = 0;
+            let crits = 0;
+            let fails = 0;
+
+            loggerState.currentSequence.forEach(val => {
+                if (val === 1) {
+                    fails++;
+                } else {
+                    const isCrit = loggerState.critThreshold !== 'none' && val >= loggerState.critThreshold;
+                    const isSucc = val >= loggerState.successThreshold;
+
+                    if (isCrit) {
+                        crits++;
+                        hits++;
+                    } else if (isSucc) {
+                        hits++;
+                    } else {
+                        fails++;
+                    }
+                }
+            });
+
+            const rollRecord = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                role: loggerState.role,
+                rollType: loggerState.rollType,
+                successThreshold: loggerState.successThreshold,
+                critThreshold: loggerState.critThreshold,
+                dice: [...loggerState.currentSequence],
+                stats: { total: loggerState.currentSequence.length, hits, crits, fails }
+            };
+
+            session.rolls.unshift(rollRecord);
+            saveAppData();
+
+            showToast(`Logged ${rollRecord.stats.total} ${loggerState.rollType} dice!`);
+
+            loggerState.currentSequence = [];
+            renderSequencePreview();
+        };
+
+        window.createNewGameSession = function() {
+            const input = document.getElementById('new-game-name');
+            const rawName = input ? input.value.trim() : '';
+            const activeCount = appData.sessions.filter(s => !s.archived).length;
+            const name = rawName !== '' ? rawName : `Game ${activeCount + 1}`;
+            
+            const newId = 'game_' + Date.now();
+            const newGame = {
+                id: newId,
+                name: name,
+                date: new Date().toLocaleDateString('en-CA'),
+                myFaction: 'My Team',
+                oppFaction: 'Opponent',
+                result: 'active',
+                archived: false,
+                rolls: []
+            };
+
+            appData.sessions.unshift(newGame);
+            appData.activeSessionId = newId;
+            if (input) input.value = '';
+            saveAppData();
+            updateUI();
+            renderSessionsList();
+            window.switchTab('dashboard');
+            showToast(`Started: ${name}`);
+        };
+
+        window.setActiveSession = function(id) {
+            appData.activeSessionId = id;
+            saveAppData();
+            updateUI();
+            window.switchTab('dashboard');
+            showToast(`Switched game session`);
+        };
+
+        window.clearSessionLogs = function() {
+            const session = getActiveSession();
+            if (!session || session.rolls.length === 0) {
+                showToast("No rolls to reset in this game.");
+                return;
+            }
+            if (confirm(`Reset all recorded dice logs for "${session.name}"?`)) {
+                session.rolls = [];
+                saveAppData();
+                updateUI();
+                showToast("Session logs reset successfully");
+            }
+        };
+
+        window.clearActiveSessionLogs = function() {
+            window.clearSessionLogs();
+        };
+
+        window.updateMatchMeta = function() {
+            const session = getActiveSession();
+            if (!session) return;
+            const myInput = document.getElementById('input-my-faction');
+            const oppInput = document.getElementById('input-opp-faction');
+            if (myInput) session.myFaction = myInput.value || 'My Team';
+            if (oppInput) session.oppFaction = oppInput.value || 'Opponent';
+            saveAppData();
+        };
+
+        window.setMatchResult = function(res) {
+            const session = getActiveSession();
+            if (!session) return;
+            session.result = session.result === res ? 'active' : res;
+            saveAppData();
+            updateResultButtons();
+            renderSessionsList();
+        };
+
+        function updateResultButtons() {
+            const session = getActiveSession();
+            if (!session) return;
+            ['win', 'loss', 'draw'].forEach(r => {
+                const btn = document.getElementById(`res-btn-${r}`);
+                if (btn) {
+                    if (session.result === r) {
+                        if (r === 'win') btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-success text-white shadow";
+                        else if (r === 'loss') btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-danger text-white shadow";
+                        else btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-myTeam text-white shadow";
+                    } else {
+                        btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600";
+                    }
+                }
+            });
+        }
+
+        window.openGameOptions = function(sessionId, event) {
+            if (event) event.stopPropagation();
+            modalTargetSessionId = sessionId;
+            const session = appData.sessions.find(s => s.id === sessionId);
+            if (!session) return;
+            const titleEl = document.getElementById('modal-game-title');
+            if (titleEl) titleEl.innerText = session.name;
+            const modal = document.getElementById('game-options-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeGameOptionsModal = function() {
+            const modal = document.getElementById('game-options-modal');
+            if (modal) modal.classList.add('hidden');
+            modalTargetSessionId = null;
+        };
+
+        window.modalActionMoveUp = function() {
+            if (!modalTargetSessionId) return;
+            const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
+            if (idx > 0) {
+                const temp = appData.sessions[idx];
+                appData.sessions[idx] = appData.sessions[idx - 1];
+                appData.sessions[idx - 1] = temp;
+                saveAppData();
+                renderSessionsList();
+                showToast("Moved game up");
+            }
+            window.closeGameOptionsModal();
+        };
+
+        window.modalActionMoveDown = function() {
+            if (!modalTargetSessionId) return;
+            const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
+            if (idx !== -1 && idx < appData.sessions.length - 1) {
+                const temp = appData.sessions[idx];
+                appData.sessions[idx] = appData.sessions[idx + 1];
+                appData.sessions[idx + 1] = temp;
+                saveAppData();
+                renderSessionsList();
+                showToast("Moved game down");
+            }
+            window.closeGameOptionsModal();
+        };
+
+        window.modalActionArchive = function() {
+            if (!modalTargetSessionId) return;
+            const session = appData.sessions.find(s => s.id === modalTargetSessionId);
+            if (session) {
+                session.archived = true;
+                if (appData.activeSessionId === modalTargetSessionId) {
+                    const remaining = appData.sessions.find(s => !s.archived);
+                    appData.activeSessionId = remaining ? remaining.id : null;
+                }
+                saveAppData();
+                renderSessionsList();
+                updateUI();
+                showToast(`Archived "${session.name}"`);
+            }
+            window.closeGameOptionsModal();
+        };
+
+        window.modalActionDelete = function() {
+            if (!modalTargetSessionId) return;
+            const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
+            if (idx !== -1) {
+                const deletedName = appData.sessions[idx].name;
+                appData.sessions.splice(idx, 1);
+                if (appData.activeSessionId === modalTargetSessionId) {
+                    const remaining = appData.sessions.find(s => !s.archived);
+                    appData.activeSessionId = remaining ? remaining.id : null;
+                }
+                saveAppData();
+                renderSessionsList();
+                updateUI();
+                showToast(`Deleted "${deletedName}"`);
+            }
+            window.closeGameOptionsModal();
+        };
+
+        window.toggleArchiveModal = function() {
+            const modal = document.getElementById('archive-modal');
+            if (!modal) return;
+            if (modal.classList.contains('hidden')) {
+                renderArchivedList();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        };
+
+        function renderArchivedList() {
+            const container = document.getElementById('archived-games-list');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const archivedSessions = appData.sessions.filter(s => s.archived);
+            const badge = document.getElementById('archive-count-badge');
+            if (badge) badge.innerText = archivedSessions.length;
+
+            if (archivedSessions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No archived games.</p>`;
+                return;
+            }
+
+            archivedSessions.forEach(s => {
+                const card = document.createElement('div');
+                card.className = "p-3 rounded-xl bg-tactical-900 border border-tactical-700 flex justify-between items-center text-xs";
+                card.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-white">${s.name}</h4>
+                        <p class="text-[10px] text-gray-400">${s.date} • ${s.rolls.length} roll entries</p>
+                    </div>
+                    <div class="flex items-center space-x-1.5">
+                        <button type="button" onclick="window.unarchiveSession('${s.id}')" class="px-2.5 py-1 bg-tactical-myTeam text-white rounded-lg font-bold">Restore</button>
+                        <button type="button" onclick="window.permanentDeleteArchivedSession('${s.id}')" class="px-2.5 py-1 bg-tactical-danger/20 hover:bg-tactical-danger/30 text-tactical-danger rounded-lg font-bold" title="Delete Permanently">Delete</button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.unarchiveSession = function(id) {
+            const session = appData.sessions.find(s => s.id === id);
+            if (session) {
+                session.archived = false;
+                saveAppData();
+                renderSessionsList();
+                renderArchivedList();
+                showToast(`Restored "${session.name}"`);
+            }
+        };
+
+        window.permanentDeleteArchivedSession = function(id) {
+            const idx = appData.sessions.findIndex(s => s.id === id);
+            if (idx !== -1) {
+                const deletedName = appData.sessions[idx].name;
+                appData.sessions.splice(idx, 1);
+                saveAppData();
+                renderSessionsList();
+                renderArchivedList();
+                showToast(`Permanently deleted "${deletedName}"`);
+            }
+        };
+
+        function updateUI() {
+            const session = getActiveSession();
+            if (!session) return;
+            
+            const activeLabel = document.getElementById('active-session-label');
+            const dashName = document.getElementById('dash-session-name');
+            const loggerName = document.getElementById('logger-active-game-name');
+            const dashDate = document.getElementById('dash-session-date');
+            const myFactionInput = document.getElementById('input-my-faction');
+            const oppFactionInput = document.getElementById('input-opp-faction');
+
+            if (activeLabel) activeLabel.innerText = session.name;
+            if (dashName) dashName.innerText = session.name;
+            if (loggerName) loggerName.innerText = session.name;
+            
+            let statusText = `${session.date} • `;
+            if (session.result === 'win') statusText += 'Win 🏆';
+            else if (session.result === 'loss') statusText += 'Loss ❌';
+            else if (session.result === 'draw') statusText += 'Draw 🤝';
+            else statusText += 'In Progress';
+            if (dashDate) dashDate.innerText = statusText;
+
+            if (myFactionInput) myFactionInput.value = session.myFaction || 'My Team';
+            if (oppFactionInput) oppFactionInput.value = session.oppFaction || 'Opponent';
+
+            updateResultButtons();
+
+            let attackMyTotal = 0, attackOppTotal = 0;
+            let attackMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+            let attackOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+            let defenseMyTotal = 0, defenseOppTotal = 0;
+            let defenseMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+            let defenseOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+
+            session.rolls.forEach(r => {
+                const isAttack = (r.rollType || 'attack') === 'attack';
+                if (r.role === 'my') {
+                    r.dice.forEach(d => {
+                        if (isAttack) {
+                            if (attackMyFaces[d] !== undefined) attackMyFaces[d]++;
+                            attackMyTotal++;
+                        } else {
+                            if (defenseMyFaces[d] !== undefined) defenseMyFaces[d]++;
+                            defenseMyTotal++;
+                        }
+                    });
+                } else {
+                    r.dice.forEach(d => {
+                        if (isAttack) {
+                            if (attackOppFaces[d] !== undefined) attackOppFaces[d]++;
+                            attackOppTotal++;
+                        } else {
+                            if (defenseOppFaces[d] !== undefined) defenseOppFaces[d]++;
+                            defenseOppTotal++;
+                        }
+                    });
+                }
+            });
+
+            const legendAttackMy = document.getElementById('legend-attack-my-count');
+            const legendAttackOpp = document.getElementById('legend-attack-opp-count');
+            if (legendAttackMy) legendAttackMy.innerText = `(${attackMyTotal})`;
+            if (legendAttackOpp) legendAttackOpp.innerText = `(${attackOppTotal})`;
+
+            const legendDefenseMy = document.getElementById('legend-defense-my-count');
+            const legendDefenseOpp = document.getElementById('legend-defense-opp-count');
+            if (legendDefenseMy) legendDefenseMy.innerText = `(${defenseMyTotal})`;
+            if (legendDefenseOpp) legendDefenseOpp.innerText = `(${defenseOppTotal})`;
+
+            renderChartAndTable('attack', attackMyFaces, attackOppFaces, attackMyTotal, attackOppTotal);
+            renderChartAndTable('defense', defenseMyFaces, defenseOppFaces, defenseMyTotal, defenseOppTotal);
+
+            const historyList = document.getElementById('session-history-list');
+            if (historyList) {
+                historyList.innerHTML = '';
+
+                if (session.rolls.length === 0) {
+                    historyList.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No dice sequences recorded in this game yet.</p>`;
+                    return;
+                }
+
+                session.rolls.forEach(r => {
+                    const item = document.createElement('div');
+                    item.className = "bg-tactical-900/90 border border-tactical-700/80 rounded-xl p-3.5 flex flex-col space-y-2 text-xs shadow-md";
+                    
+                    let diceHtml = r.dice.map(d => `<span class="px-2 py-0.5 rounded-lg bg-tactical-800 text-white font-mono font-bold border border-tactical-700/50">${d}</span>`).join('');
+                    const roleBadge = r.role === 'my' ? '<span class="text-[9px] bg-tactical-myTeam/20 text-blue-400 px-1.5 py-0.5 rounded font-bold">My Team</span>' : '<span class="text-[9px] bg-tactical-opponent/20 text-orange-400 px-1.5 py-0.5 rounded font-bold">Opponent</span>';
+                    const rollTypeBadge = `<span class="text-[9px] bg-tactical-700 text-gray-200 px-1.5 py-0.5 rounded font-bold uppercase">${r.rollType || 'attack'}</span>`;
+
+                    item.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center space-x-1.5">
+                                ${roleBadge}
+                                ${rollTypeBadge}
+                                <span class="font-bold text-gray-300">(${r.successThreshold}+)</span>
+                            </div>
+                            <span class="text-[10px] text-gray-400 font-mono">${r.timestamp}</span>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 items-center">
+                            ${diceHtml}
+                        </div>
+                        <div class="flex justify-between items-center text-[11px] pt-2 border-t border-tactical-700/50 text-gray-300">
+                            <span>Total: <strong>${r.stats.total}</strong></span>
+                            <span class="text-tactical-success font-bold">Hits: ${r.stats.hits}</span>
+                            <span class="text-tactical-crit font-bold">Crits: ${r.stats.crits}</span>
+                            <span class="text-tactical-danger font-bold">Fails: ${r.stats.fails}</span>
+                        </div>
+                    `;
+                    historyList.appendChild(item);
+                });
+            }
+        }
+
+        function renderChartAndTable(type, myFaces, oppFaces, myTotal, oppTotal) {
+            const chartContainer = document.getElementById(`distribution-chart-${type}`);
+            const tableBody = document.getElementById(`distribution-table-${type}`);
+            if (!chartContainer || !tableBody) return;
+
+            chartContainer.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            const maxCount = Math.max(1, ...Object.values(myFaces), ...Object.values(oppFaces));
+
+            const chartWrapper = document.createElement('div');
+            chartWrapper.className = "bg-tactical-900/60 p-3 rounded-2xl border border-tactical-700/50 relative space-y-3";
+            
+            let barsHtml = `
+                <div class="relative h-32 flex items-end justify-between px-2 pt-6 pb-2">
+                    <div class="absolute top-[45%] left-0 right-0 border-t border-dashed border-gray-600/70 z-0"></div>
+            `;
+
+            for (let i = 1; i <= 6; i++) {
+                const myCount = myFaces[i];
+                const oppCount = oppFaces[i];
+                const myHeight = myTotal > 0 ? Math.max(8, Math.min(100, (myCount / maxCount) * 85)) : 6;
+                const oppHeight = oppTotal > 0 ? Math.max(8, Math.min(100, (oppCount / maxCount) * 85)) : 6;
+
+                barsHtml += `
+                    <div class="flex-1 flex flex-col items-center justify-end h-full z-10 px-0.5">
+                        <div class="flex items-end justify-center space-x-1 w-full h-full">
+                            <div class="flex flex-col items-center justify-end h-full">
+                                <span class="text-[9px] font-mono text-tactical-myTeam mb-0.5">${myCount}</span>
+                                <div class="w-3 sm:w-3.5 bg-tactical-myTeam rounded-t transition-all duration-300 shadow" style="height: ${myCount > 0 ? myHeight : 4}px"></div>
+                            </div>
+                            <div class="flex flex-col items-center justify-end h-full">
+                                <span class="text-[9px] font-mono text-tactical-opponent mb-0.5">${oppCount}</span>
+                                <div class="w-3 sm:w-3.5 bg-tactical-opponent rounded-t transition-all duration-300 shadow" style="height: ${oppCount > 0 ? oppHeight : 4}px"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            barsHtml += `</div>`;
+
+            let pipsIconsHtml = `
+                <div class="grid grid-cols-6 gap-1 pt-2 border-t border-tactical-700/60">
+            `;
+
+            for (let i = 1; i <= 6; i++) {
+                pipsIconsHtml += `
+                    <div class="flex justify-center items-center py-1.5 bg-tactical-800/80 rounded-xl border border-tactical-700/60 shadow-sm">
+                        ${pipSVGs[i]}
+                    </div>
+                `;
+            }
+            pipsIconsHtml += `</div>`;
+
+            chartWrapper.innerHTML = barsHtml + pipsIconsHtml;
+            chartContainer.appendChild(chartWrapper);
+
+            for (let i = 1; i <= 6; i++) {
+                const myCount = myFaces[i];
+                const myPct = myTotal > 0 ? ((myCount / myTotal) * 100).toFixed(1) : '0.0';
+                const oppCount = oppFaces[i];
+                const oppPct = oppTotal > 0 ? ((oppCount / oppTotal) * 100).toFixed(1) : '0.0';
+
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center text-xs font-mono py-1.5 border-b border-tactical-700/30";
+                row.innerHTML = `
+                    <div class="flex items-center space-x-2 w-12">
+                        <div class="w-6 h-6 bg-tactical-900 rounded-lg border border-tactical-700 flex items-center justify-center shadow-sm">
+                            ${pipSVGs[i]}
+                        </div>
+                    </div>
+                    <span class="text-tactical-myTeam font-bold">${myCount} (${myPct}%)</span>
+                    <span class="text-tactical-opponent font-bold">${oppCount} (${oppPct}%)</span>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
+
+        function renderSessionsList() {
+            const container = document.getElementById('sessions-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const activeSessions = appData.sessions.filter(s => !s.archived);
+            const archivedCount = appData.sessions.filter(s => s.archived).length;
+            const badge = document.getElementById('archive-count-badge');
+            if (badge) badge.innerText = archivedCount;
+
+            if (activeSessions.length === 0) {
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No active games. Create one above!</p>`;
+                return;
+            }
+
+            activeSessions.forEach(s => {
+                const isActive = s.id === appData.activeSessionId;
+                const totalRolls = s.rolls.reduce((acc, r) => acc + r.stats.total, 0);
+
+                const card = document.createElement('div');
+                card.className = `p-3.5 rounded-2xl border flex justify-between items-center transition shadow-md ${isActive ? 'bg-tactical-700/60 border-tactical-myTeam' : 'bg-tactical-900/90 border-tactical-700/80 hover:border-gray-500'}`;
+
+                let resultBadge = '';
+                if (s.result === 'win') resultBadge = '<span class="text-[9px] bg-tactical-success text-white px-2 py-0.5 rounded-full font-bold">Win</span>';
+                else if (s.result === 'loss') resultBadge = '<span class="text-[9px] bg-tactical-danger text-white px-2 py-0.5 rounded-full font-bold">Loss</span>';
+                else if (s.result === 'draw') resultBadge = '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-bold">Draw</span>';
+
+                card.innerHTML = `
+                    <div class="space-y-1 flex-1 cursor-pointer" onclick="window.setActiveSession('${s.id}')">
+                        <div class="flex items-center space-x-2">
+                            <h4 class="font-extrabold text-xs text-white">${s.name}</h4>
+                            ${resultBadge}
+                            ${isActive ? '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-extrabold tracking-wide">ACTIVE</span>' : ''}
+                        </div>
+                        <p class="text-[10px] text-gray-400">${s.date} • <span class="font-mono">${totalRolls}</span> rolls recorded</p>
+                    </div>
+                    <div class="flex items-center space-x-2 pl-2">
+                        <button type="button" onclick="window.openGameOptions('${s.id}', event)" class="w-8 h-8 rounded-xl bg-tactical-800 hover:bg-tactical-700 border border-tactical-600 flex items-center justify-center text-gray-300 transition" title="Game Options">
+                            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            document.getElementById('toast-msg').innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
