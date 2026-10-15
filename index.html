@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kill Team Dice Tracker</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -13,24 +12,23 @@
                 extend: {
                     colors: {
                         tactical: {
-                            900: '#070b14',        /* Deep tactical blue background */
-                            800: '#0f172a',        /* Dark blue surface */
-                            700: '#1e293b',        /* Border & secondary dark */
+                            900: '#070b14',        
+                            800: '#0f172a',        
+                            700: '#1e293b',        
                             600: '#334155',
-                            myTeam: '#3b82f6',     /* Blue for My Team */
+                            myTeam: '#3b82f6',     
                             myTeamHover: '#2563eb',
-                            opponent: '#f97316',   /* Orange for Opponent */
+                            opponent: '#f97316',   
                             opponentHover: '#ea580c',
                             success: '#22c55e',
                             crit: '#38bdf8',
-                            danger: '#ef4444'      /* Red for Attack / Danger */
+                            danger: '#ef4444'      
                         }
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -74,18 +72,21 @@
     <header class="sticky top-0 z-50 kill-team-header px-4 py-3 shadow-2xl">
         <div class="flex items-center justify-between">
             <div class="flex items-center space-x-2.5">
+                <button type="button" onclick="window.toggleLanguage()" class="px-2 py-1.5 bg-tactical-800 rounded-lg border border-tactical-600 hover:bg-tactical-700 text-gray-300 font-bold text-[10px] shadow-sm tactile-btn flex items-center shrink-0 transition" title="Toggle Language">
+                    <i class="fa-solid fa-language mr-1 text-blue-400"></i> <span id="lang-indicator">EN</span>
+                </button>
                 <div class="w-9 h-9 rounded-xl bg-tactical-myTeam flex items-center justify-center text-white font-black text-base shadow-lg border border-blue-400">
                     <i class="fa-solid fa-skull"></i>
                 </div>
                 <div>
-                    <h1 class="font-extrabold text-xs uppercase tracking-widest text-blue-400">Kill Team</h1>
-                    <p id="active-session-label" class="text-[11px] text-white font-black truncate max-w-[150px]">No Game Selected</p>
+                    <h1 class="font-extrabold text-xs uppercase tracking-widest text-blue-400" data-i18n="title">Kill Team</h1>
+                    <p id="active-session-label" class="text-[11px] text-white font-black truncate max-w-[130px]" data-i18n="no_game">No Game Selected</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <div id="cloud-sync-status" class="text-[10px] text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-800/60 font-mono flex items-center space-x-1.5" title="Secure Cloud Account Storage">
+                <div id="cloud-sync-status" class="text-[10px] text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-800/60 font-mono flex items-center space-x-1.5">
                     <i class="fa-solid fa-cloud-arrow-up text-[10px]"></i>
-                    <span id="cloud-status-text">Cloud Sync</span>
+                    <span id="cloud-status-text" data-i18n="cloud_saved">Cloud Saved</span>
                 </div>
                 <button type="button" onclick="window.toggleArchiveModal()" class="px-2.5 py-1.5 rounded-xl bg-tactical-700/80 hover:bg-tactical-600 text-gray-300 text-xs font-bold transition border border-tactical-600 flex items-center space-x-1 shadow-md tactile-btn" title="Archived Games">
                     <i class="fa-solid fa-box-archive text-xs"></i>
@@ -97,7 +98,6 @@
 
     <main class="flex-1 max-w-md w-full mx-auto p-4 pb-28 overflow-y-auto">
 
-        <!-- GAMES / SESSIONS VIEW -->
         <section id="view-sessions" class="space-y-4">
             <div class="kill-team-badge rounded-2xl p-4 shadow-xl relative overflow-hidden blue-glow">
                 <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-tactical-myTeam/10 rounded-full blur-xl pointer-events-none"></div>
@@ -106,69 +106,74 @@
                         <i class="fa-solid fa-crosshairs"></i>
                     </div>
                     <div>
-                        <h2 class="font-black text-sm text-white uppercase tracking-wider">Warhammer Kill Team</h2>
-                        <p class="text-[11px] text-gray-400">Secure Cloud-Saved Dice Odds</p>
+                        <h2 class="font-black text-sm text-white uppercase tracking-wider" data-i18n="wh_kill_team">Warhammer Kill Team</h2>
+                        <p class="text-[11px] text-gray-400" data-i18n="secure_cloud">Secure Cloud-Saved Dice Odds</p>
                     </div>
                 </div>
             </div>
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <h3 class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam flex items-center">
-                    <i class="fa-solid fa-plus-circle mr-1.5"></i> Start New Game Session
+                    <i class="fa-solid fa-plus-circle mr-1.5"></i> <span data-i18n="start_new">Start New Game Session</span>
                 </h3>
                 <div class="space-y-2.5">
-                    <input type="text" id="new-game-name" placeholder="e.g., Match 1 - Table 4" 
+                    <input type="text" id="new-game-name" data-i18n-placeholder="placeholder_game" placeholder="e.g., Match 1 - Table 4" 
                         class="w-full bg-tactical-900 border border-tactical-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-tactical-myTeam transition shadow-inner">
                     <button type="button" onclick="window.createNewGameSession()" class="w-full py-3 bg-tactical-myTeam hover:bg-tactical-myTeamHover text-white font-black text-xs uppercase rounded-xl transition shadow-lg tactile-btn">
-                        Create Game
+                        <span data-i18n="create_game">Create Game</span>
                     </button>
                 </div>
             </div>
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
-                <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-300 flex items-center">
-                    <i class="fa-solid fa-list mr-1.5"></i> Your Game Sessions
-                </h3>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-tactical-700/50 pb-2">
+                    <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-300 flex items-center">
+                        <i class="fa-solid fa-list mr-1.5 text-tactical-myTeam"></i> <span data-i18n="your_sessions">Your Game Sessions</span>
+                    </h3>
+                    <div class="flex space-x-1.5 text-[10px] font-bold">
+                        <span class="bg-tactical-success/10 text-tactical-success border border-tactical-success/30 px-2 py-0.5 rounded-lg shadow-sm flex items-center space-x-1"><span data-i18n="win_abbr">W</span><span>:</span><span id="tally-w" class="font-mono text-xs">0</span></span>
+                        <span class="bg-tactical-danger/10 text-tactical-danger border border-tactical-danger/30 px-2 py-0.5 rounded-lg shadow-sm flex items-center space-x-1"><span data-i18n="loss_abbr">L</span><span>:</span><span id="tally-l" class="font-mono text-xs">0</span></span>
+                        <span class="bg-tactical-myTeam/10 text-blue-400 border border-tactical-myTeam/30 px-2 py-0.5 rounded-lg shadow-sm flex items-center space-x-1"><span data-i18n="draw_abbr">D</span><span>:</span><span id="tally-d" class="font-mono text-xs">0</span></span>
+                    </div>
+                </div>
                 <div id="sessions-list-container" class="space-y-2.5">
                     <!-- Injected via JS -->
                 </div>
             </div>
         </section>
 
-        <!-- LOGGER VIEW -->
         <section id="view-logger" class="space-y-3.5 hidden">
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl px-4 py-3 shadow-lg backdrop-blur flex items-center justify-between text-xs">
                 <div class="flex items-center space-x-1.5 text-gray-400 font-bold uppercase tracking-wider text-[10px]">
                     <i class="fa-solid fa-dice text-blue-400"></i>
-                    <span>Logging for:</span>
+                    <span data-i18n="logging_for">Logging for:</span>
                 </div>
-                <span id="logger-active-game-name" class="font-extrabold text-blue-400 truncate max-w-[200px]">No Game Selected</span>
+                <span id="logger-active-game-name" class="font-extrabold text-blue-400 truncate max-w-[200px]" data-i18n="no_game">No Game Selected</span>
             </div>
             
             <div class="bg-tactical-800/90 p-1.5 rounded-2xl border border-tactical-700/80 shadow-lg backdrop-blur flex items-center justify-between">
                 <button type="button" onclick="window.setLoggerRole('my')" id="role-btn-my" class="flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn">
-                    <i class="fa-solid fa-user-shield mr-1"></i> My Team
+                    <i class="fa-solid fa-user-shield mr-1"></i> <span data-i18n="my_team">My Team</span>
                 </button>
                 <button type="button" onclick="window.setLoggerRole('opponent')" id="role-btn-opponent" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn">
-                    <i class="fa-solid fa-user-secret mr-1"></i> Opponent
+                    <i class="fa-solid fa-user-secret mr-1"></i> <span data-i18n="opponent">Opponent</span>
                 </button>
             </div>
 
-            <!-- Attack Roll & Defense Roll Selection Bars -->
             <div class="space-y-2">
                 <button type="button" onclick="window.setLoggerRollType('attack')" id="rolltype-btn-attack" class="w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-sword text-xs"></i>
-                    <span>Attack Roll</span>
+                    <span data-i18n="attack_roll">Attack Roll</span>
                 </button>
                 <button type="button" onclick="window.setLoggerRollType('defense')" id="rolltype-btn-defense" class="w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-700 text-gray-300 hover:text-white border border-tactical-600 transition tactile-btn flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-shield-halved text-xs"></i>
-                    <span>Defense Roll</span>
+                    <span data-i18n="defense_roll">Defense Roll</span>
                 </button>
             </div>
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <div class="flex items-center justify-between">
-                    <span id="label-success-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20">Success</span>
+                    <span id="label-success-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20" data-i18n="success">Success</span>
                     <div class="grid grid-cols-5 gap-1.5 flex-1">
                         <button type="button" onclick="window.setSuccessThreshold(2)" id="thresh-succ-2" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">2+</button>
                         <button type="button" onclick="window.setSuccessThreshold(3)" id="thresh-succ-3" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">3+</button>
@@ -179,9 +184,9 @@
                 </div>
 
                 <div class="flex items-center justify-between">
-                    <span id="label-crit-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20">Critical</span>
+                    <span id="label-crit-text" class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam w-20" data-i18n="critical">Critical</span>
                     <div class="grid grid-cols-5 gap-1.5 flex-1">
-                        <button type="button" onclick="window.setCritThreshold('none')" id="thresh-crit-none" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">None</button>
+                        <button type="button" onclick="window.setCritThreshold('none')" id="thresh-crit-none" class="py-2 rounded-xl font-mono font-bold text-[10px] bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn" data-i18n="none">None</button>
                         <button type="button" onclick="window.setCritThreshold(3)" id="thresh-crit-3" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">3+</button>
                         <button type="button" onclick="window.setCritThreshold(4)" id="thresh-crit-4" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">4+</button>
                         <button type="button" onclick="window.setCritThreshold(5)" id="thresh-crit-5" class="py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn">5+</button>
@@ -192,9 +197,9 @@
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-3 shadow-xl backdrop-blur flex items-center justify-between min-h-[58px]">
                 <div id="dice-sequence-container" class="flex flex-wrap gap-2 items-center flex-1 overflow-x-auto">
-                    <span class="text-xs text-gray-500 italic px-2">Tap 1-6 dice below...</span>
+                    <span class="text-xs text-gray-500 italic px-2" data-i18n="tap_dice">Tap 1-6 dice below...</span>
                 </div>
-                <span id="sequence-count-indicator" class="text-xs font-mono font-bold text-blue-400 pl-2 shrink-0">0 dice</span>
+                <span id="sequence-count-indicator" class="text-xs font-mono font-bold text-blue-400 pl-2 shrink-0">0 <span data-i18n="dice_word">dice</span></span>
             </div>
 
             <div class="grid grid-cols-3 gap-2.5">
@@ -220,102 +225,103 @@
 
             <div class="grid grid-cols-3 gap-2.5 pt-2">
                 <button type="button" onclick="window.clearAllSequence()" class="py-3.5 rounded-2xl bg-tactical-800/90 hover:bg-tactical-700 border border-tactical-700/80 text-gray-300 font-extrabold text-xs uppercase tracking-wider transition shadow-lg backdrop-blur tactile-btn">
-                    Clear
+                    <span data-i18n="clear">Clear</span>
                 </button>
                 <button type="button" onclick="window.clearCurrentSequence()" class="py-3.5 rounded-2xl bg-tactical-800/90 hover:bg-tactical-700 border border-tactical-700/80 text-gray-300 font-bold text-xs transition shadow-lg backdrop-blur flex items-center justify-center tactile-btn">
                     <i class="fa-solid fa-arrow-left text-sm"></i>
                 </button>
                 <button type="button" onclick="window.confirmSequence()" id="confirm-btn" class="py-3.5 rounded-2xl bg-tactical-myTeam hover:bg-tactical-myTeamHover text-white font-black text-xs uppercase tracking-wider transition shadow-xl flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed tactile-btn" disabled>
-                    Confirm
+                    <span data-i18n="confirm">Confirm</span>
                 </button>
             </div>
         </section>
 
-        <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="space-y-4 hidden">
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <div class="flex items-center justify-between">
                     <button type="button" onclick="window.switchTab('sessions')" class="px-3 py-1.5 bg-tactical-700 hover:bg-tactical-600 text-tactical-myTeam rounded-xl text-xs font-bold transition border border-tactical-600 shadow flex items-center">
-                        <i class="fa-solid fa-chevron-left mr-1.5 text-[10px]"></i> Games
+                        <i class="fa-solid fa-chevron-left mr-1.5 text-[10px]"></i> <span data-i18n="games_tab">Games</span>
                     </button>
                     <div class="text-center">
-                        <h2 id="dash-session-name" class="text-sm font-black text-white truncate max-w-[160px]">Game 1</h2>
+                        <h2 id="dash-session-name" class="text-sm font-black text-white truncate max-w-[130px]">Game 1</h2>
                         <p id="dash-session-date" class="text-[10px] text-gray-400 font-mono mt-0.5">2026/10/12 • Active</p>
                     </div>
                     <button type="button" onclick="window.clearActiveSessionLogs()" class="px-3 py-1.5 bg-tactical-danger/20 hover:bg-tactical-danger/30 text-tactical-danger rounded-xl text-xs font-bold transition border border-tactical-danger/40 shadow flex items-center space-x-1" title="Clear Session Logs">
                         <i class="fa-solid fa-rotate-right text-[10px]"></i>
-                        <span>Reset Logs</span>
+                        <span data-i18n="reset_logs">Reset Logs</span>
                     </button>
                 </div>
 
-                <div class="bg-tactical-900/80 rounded-xl p-3 border border-tactical-700/60 space-y-3">
-                    <div class="grid grid-cols-2 gap-2 text-center">
-                        <div>
-                            <span class="text-[10px] uppercase font-extrabold text-blue-400 block">My Team</span>
-                            <input type="text" id="input-my-faction" onchange="window.updateMatchMeta()" placeholder="e.g. Kommandos" 
-                                class="w-full bg-transparent text-center font-bold text-xs text-white border-b border-tactical-700 pb-1 mt-0.5 focus:outline-none focus:border-tactical-myTeam">
+                <div class="bg-tactical-900/80 rounded-xl p-3 border border-tactical-700/60 space-y-2.5">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] uppercase font-extrabold text-blue-400 block text-center mb-0.5" data-i18n="my_team">My Team</span>
+                            <input type="text" id="input-my-faction" onchange="window.updateMatchMeta()" data-i18n-placeholder="placeholder_my_faction" placeholder="Faction e.g. Kommandos" 
+                                class="w-full bg-tactical-800 border border-tactical-700 rounded-lg text-center font-bold text-xs text-white py-1.5 px-1.5 focus:outline-none focus:border-tactical-myTeam">
+                            <input type="text" id="input-my-player" onchange="window.updateMatchMeta()" data-i18n-placeholder="placeholder_my_name" placeholder="My Name" 
+                                class="w-full bg-tactical-800 border border-tactical-700 rounded-lg text-center text-xs text-gray-300 py-1.5 px-1.5 mt-0.5 focus:outline-none focus:border-tactical-myTeam">
                         </div>
-                        <div>
-                            <span class="text-[10px] uppercase font-extrabold text-orange-400 block">Opponent</span>
-                            <input type="text" id="input-opp-faction" onchange="window.updateMatchMeta()" placeholder="e.g. Intercession" 
-                                class="w-full bg-transparent text-center font-bold text-xs text-white border-b border-tactical-700 pb-1 mt-0.5 focus:outline-none focus:border-orange-500">
+                        
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] uppercase font-extrabold text-orange-400 block text-center mb-0.5" data-i18n="opponent">Opponent Team</span>
+                            <input type="text" id="input-opp-faction" onchange="window.updateMatchMeta()" data-i18n-placeholder="placeholder_opp_faction" placeholder="Faction e.g. Intercession" 
+                                class="w-full bg-tactical-800 border border-tactical-700 rounded-lg text-center font-bold text-xs text-white py-1.5 px-1.5 focus:outline-none focus:border-orange-500">
+                            <input type="text" id="input-opp-player" onchange="window.updateMatchMeta()" data-i18n-placeholder="placeholder_opp_name" placeholder="Opponent Name" 
+                                class="w-full bg-tactical-800 border border-tactical-700 rounded-lg text-center text-xs text-gray-300 py-1.5 px-1.5 mt-0.5 focus:outline-none focus:border-orange-500">
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-center space-x-3 pt-1">
-                        <span class="text-[10px] font-extrabold uppercase text-gray-400">Result:</span>
+                    <div class="flex items-center justify-center space-x-3 pt-1 border-t border-tactical-700/40">
+                        <span class="text-[10px] font-extrabold uppercase text-gray-400" data-i18n="result">Result:</span>
                         <div class="flex space-x-1.5">
-                            <button type="button" onclick="window.setMatchResult('win')" id="res-btn-win" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Win</button>
-                            <button type="button" onclick="window.setMatchResult('loss')" id="res-btn-loss" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Loss</button>
-                            <button type="button" onclick="window.setMatchResult('draw')" id="res-btn-draw" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Draw</button>
+                            <button type="button" onclick="window.setMatchResult('win')" id="res-btn-win" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600" data-i18n="win">Win</button>
+                            <button type="button" onclick="window.setMatchResult('loss')" id="res-btn-loss" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600" data-i18n="loss">Loss</button>
+                            <button type="button" onclick="window.setMatchResult('draw')" id="res-btn-draw" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600" data-i18n="draw">Draw</button>
                         </div>
                     </div>
 
-                    <!-- Match Scoring Breakdown -->
                     <div class="pt-2 border-t border-tactical-700/60 space-y-2">
-                        <span class="text-[10px] font-extrabold uppercase text-gray-400 block text-center">Match Scores Breakdown</span>
+                        <span class="text-[10px] font-extrabold uppercase text-gray-400 block text-center" data-i18n="score_breakdown">Match Scores Breakdown</span>
                         <div class="grid grid-cols-2 gap-3">
-                            <!-- My Team Scores -->
                             <div class="bg-tactical-800/80 p-2 rounded-xl border border-tactical-myTeam/30 space-y-1.5">
-                                <span class="text-[10px] font-extrabold text-blue-400 block text-center">My Team Scores</span>
+                                <span id="label-my-team-score" class="text-[10px] font-extrabold text-blue-400 block text-center truncate" data-i18n="my_team">My Team</span>
                                 <div class="grid grid-cols-4 gap-1 text-center">
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Crit</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="crit">Crit</span>
                                         <input type="number" min="0" max="10" id="score-my-crit" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Tac</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="tac">Tac</span>
                                         <input type="number" min="0" max="10" id="score-my-tac" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Kill</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="kill">Kill</span>
                                         <input type="number" min="0" max="10" id="score-my-kill" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-blue-400 block font-extrabold">Total</span>
+                                        <span class="text-[9px] text-blue-400 block font-extrabold" data-i18n="total">Total</span>
                                         <input type="number" min="0" max="30" id="score-my-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-blue-500/60 rounded text-center text-xs font-mono font-bold text-blue-400 py-1 focus:outline-none">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Opponent Scores -->
                             <div class="bg-tactical-800/80 p-2 rounded-xl border border-orange-500/30 space-y-1.5">
-                                <span class="text-[10px] font-extrabold text-orange-400 block text-center">Opponent Scores</span>
+                                <span id="label-opp-team-score" class="text-[10px] font-extrabold text-orange-400 block text-center truncate" data-i18n="opponent">Opponent</span>
                                 <div class="grid grid-cols-4 gap-1 text-center">
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Crit</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="crit">Crit</span>
                                         <input type="number" min="0" max="10" id="score-opp-crit" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Tac</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="tac">Tac</span>
                                         <input type="number" min="0" max="10" id="score-opp-tac" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-gray-400 block font-bold">Kill</span>
+                                        <span class="text-[9px] text-gray-400 block font-bold" data-i18n="kill">Kill</span>
                                         <input type="number" min="0" max="10" id="score-opp-kill" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
                                     </div>
                                     <div>
-                                        <span class="text-[9px] text-orange-400 block font-extrabold">Total</span>
+                                        <span class="text-[9px] text-orange-400 block font-extrabold" data-i18n="total">Total</span>
                                         <input type="number" min="0" max="30" id="score-opp-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-orange-500/60 rounded text-center text-xs font-mono font-bold text-orange-400 py-1 focus:outline-none">
                                     </div>
                                 </div>
@@ -325,121 +331,112 @@
                 </div>
             </div>
 
-            <!-- ATTACK ROLLS SECTION -->
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center">
-                        <i class="fa-solid fa-sword text-tactical-danger mr-1.5"></i> Attack Rolls (1-6 Distribution)
+                        <i class="fa-solid fa-sword text-tactical-danger mr-1.5"></i> <span data-i18n="attack_dist">Attack Rolls (1-6 Distribution)</span>
                     </h3>
                     <div class="flex items-center space-x-3 text-[10px] font-bold">
-                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> My <span id="legend-attack-my-count" class="ml-1 font-mono">(0)</span></span>
-                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> Opp <span id="legend-attack-opp-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> <span data-i18n="my">My</span> <span id="legend-attack-my-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> <span data-i18n="opp">Opp</span> <span id="legend-attack-opp-count" class="ml-1 font-mono">(0)</span></span>
                     </div>
                 </div>
 
                 <div id="distribution-chart-attack" class="space-y-3 pt-2">
-                    <!-- Injected via JS -->
                 </div>
                 <div id="distribution-table-attack" class="space-y-2 pt-2 border-t border-tactical-700/60">
-                    <!-- Injected via JS -->
                 </div>
             </div>
 
-            <!-- DEFENSE ROLLS SECTION -->
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xs font-extrabold uppercase tracking-wider text-white flex items-center">
-                        <i class="fa-solid fa-shield-halved text-tactical-crit mr-1.5"></i> Defense Rolls (1-6 Distribution)
+                        <i class="fa-solid fa-shield-halved text-tactical-crit mr-1.5"></i> <span data-i18n="defense_dist">Defense Rolls (1-6 Distribution)</span>
                     </h3>
                     <div class="flex items-center space-x-3 text-[10px] font-bold">
-                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> My <span id="legend-defense-my-count" class="ml-1 font-mono">(0)</span></span>
-                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> Opp <span id="legend-defense-opp-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-myTeam"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-myTeam inline-block mr-1"></span> <span data-i18n="my">My</span> <span id="legend-defense-my-count" class="ml-1 font-mono">(0)</span></span>
+                        <span class="flex items-center text-tactical-opponent"><span class="w-2.5 h-2.5 rounded-sm bg-tactical-opponent inline-block mr-1"></span> <span data-i18n="opp">Opp</span> <span id="legend-defense-opp-count" class="ml-1 font-mono">(0)</span></span>
                     </div>
                 </div>
 
                 <div id="distribution-chart-defense" class="space-y-3 pt-2">
-                    <!-- Injected via JS -->
                 </div>
                 <div id="distribution-table-defense" class="space-y-2 pt-2 border-t border-tactical-700/60">
-                    <!-- Injected via JS -->
                 </div>
             </div>
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <div class="flex justify-between items-center">
                     <h3 class="text-xs font-extrabold uppercase tracking-wider text-gray-400 flex items-center">
-                        <i class="fa-solid fa-scroll text-tactical-myTeam mr-1.5"></i> Roll Sequences Log
+                        <i class="fa-solid fa-scroll text-tactical-myTeam mr-1.5"></i> <span data-i18n="roll_seq_log">Roll Sequences Log</span>
                     </h3>
                 </div>
                 <div id="session-history-list" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                    <p class="text-xs text-gray-500 text-center py-4">No dice sequences recorded in this game yet.</p>
+                    <p class="text-xs text-gray-500 text-center py-4" data-i18n="no_seq_yet">No dice sequences recorded in this game yet.</p>
                 </div>
             </div>
         </section>
 
     </main>
 
-    <!-- ARCHIVED GAMES MODAL -->
     <div id="archive-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-tactical-800 border border-tactical-700 rounded-2xl max-w-sm w-full p-5 space-y-4 shadow-2xl">
             <div class="flex items-center justify-between border-b border-tactical-700 pb-3">
                 <h3 class="text-sm font-extrabold text-white flex items-center">
-                    <i class="fa-solid fa-box-archive text-tactical-myTeam mr-2"></i> Archived Games
+                    <i class="fa-solid fa-box-archive text-tactical-myTeam mr-2"></i> <span data-i18n="archived_games">Archived Games</span>
                 </h3>
                 <button type="button" onclick="window.toggleArchiveModal()" class="text-gray-400 hover:text-white">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div id="archived-games-list" class="space-y-2 max-h-60 overflow-y-auto">
-                <p class="text-xs text-gray-500 text-center py-4">No archived games.</p>
+                <p class="text-xs text-gray-500 text-center py-4" data-i18n="no_archived">No archived games.</p>
             </div>
         </div>
     </div>
 
-    <!-- GAME OPTIONS MODAL -->
     <div id="game-options-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-tactical-800 border border-tactical-700 rounded-2xl max-w-xs w-full p-4 space-y-3 shadow-2xl">
             <div class="flex items-center justify-between border-b border-tactical-700 pb-2.5">
-                <h3 id="modal-game-title" class="text-xs font-extrabold text-white truncate max-w-[200px]">Game Options</h3>
+                <h3 id="modal-game-title" class="text-xs font-extrabold text-white truncate max-w-[200px]" data-i18n="game_options">Game Options</h3>
                 <button type="button" onclick="window.closeGameOptionsModal()" class="text-gray-400 hover:text-white text-xs">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
             <div class="space-y-2">
                 <button type="button" onclick="window.modalActionMoveUp()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-gray-200 flex items-center justify-between transition">
-                    <span>Move Up</span>
+                    <span data-i18n="move_up">Move Up</span>
                     <i class="fa-solid fa-arrow-up text-tactical-myTeam"></i>
                 </button>
                 <button type="button" onclick="window.modalActionMoveDown()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-gray-200 flex items-center justify-between transition">
-                    <span>Move Down</span>
+                    <span data-i18n="move_down">Move Down</span>
                     <i class="fa-solid fa-arrow-down text-tactical-myTeam"></i>
                 </button>
                 <button type="button" onclick="window.modalActionArchive()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-yellow-400 flex items-center justify-between transition">
-                    <span>Archive Game</span>
+                    <span data-i18n="archive_game">Archive Game</span>
                     <i class="fa-solid fa-box-archive"></i>
                 </button>
-                <button type="button" onclick="window.modalActionDelete()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-900 hover:bg-tactical-700 text-xs font-bold text-tactical-danger flex items-center justify-between transition">
-                    <span>Delete Game</span>
-                    <i class="fa-solid fa-trash-can"></i>
+                <button type="button" onclick="window.modalActionDelete()" class="w-full py-2.5 px-3 rounded-xl bg-tactical-danger/20 hover:bg-tactical-danger/30 text-xs font-bold text-tactical-danger flex items-center justify-between transition border border-tactical-danger/40">
+                    <span data-i18n="delete_game">Delete Game</span>
+                    <i class="fa-solid fa-trash"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR -->
     <footer class="fixed bottom-0 left-0 right-0 bg-tactical-800/95 backdrop-blur-md border-t border-tactical-700/60 p-2 max-w-md mx-auto z-40 shadow-2xl">
         <div class="grid grid-cols-3 gap-2">
             <button type="button" onclick="window.switchTab('sessions')" id="nav-btn-sessions" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow">
                 <i class="fa-solid fa-gamepad text-sm"></i>
-                <span>Games</span>
+                <span data-i18n="games_tab">Games</span>
             </button>
             <button type="button" onclick="window.switchTab('logger')" id="nav-btn-logger" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-900/60 text-gray-400 hover:text-white">
                 <i class="fa-solid fa-crosshairs text-sm"></i>
-                <span>Log</span>
+                <span data-i18n="log_tab">Log</span>
             </button>
             <button type="button" onclick="window.switchTab('dashboard')" id="nav-btn-dashboard" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-900/60 text-gray-400 hover:text-white">
                 <i class="fa-solid fa-chart-line text-sm"></i>
-                <span>Career Stats</span>
+                <span data-i18n="stats_tab">Career Stats</span>
             </button>
         </div>
     </footer>
@@ -461,6 +458,85 @@
         let auth = null;
         let userId = null;
         let unsubscribeCloud = null;
+
+        // --- i18n Translation Dictionary ---
+        const i18n = {
+            en: {
+                title: "Kill Team", no_game: "No Game Selected", cloud_saved: "Cloud Saved", local_device: "Local Device",
+                archived_games: "Archived Games", wh_kill_team: "Warhammer Kill Team", secure_cloud: "Secure Cloud-Saved Dice Odds",
+                start_new: "Start New Game Session", placeholder_game: "e.g., Match 1 - Table 4", create_game: "Create Game",
+                your_sessions: "Your Game Sessions", logging_for: "Logging for:", my_team: "My Team", opponent: "Opponent",
+                attack_roll: "Attack Roll", defense_roll: "Defense Roll", success: "Success", critical: "Critical", none: "None",
+                tap_dice: "Tap 1-6 dice below...", clear: "Clear", confirm: "Confirm", games_tab: "Games", log_tab: "Log",
+                stats_tab: "Career Stats", reset_logs: "Reset Logs", placeholder_my_faction: "Faction e.g. Kommandos",
+                placeholder_my_name: "My Name", placeholder_opp_faction: "Faction e.g. Intercession", placeholder_opp_name: "Opponent Name",
+                result: "Result:", win: "Win", loss: "Loss", draw: "Draw", score_breakdown: "Match Scores Breakdown",
+                crit: "Crit", tac: "Tac", kill: "Kill", total: "Total", attack_dist: "Attack Rolls (1-6 Distribution)",
+                defense_dist: "Defense Rolls (1-6 Distribution)", my: "My", opp: "Opp", roll_seq_log: "Roll Sequences Log",
+                no_seq_yet: "No dice sequences recorded in this game yet.", game_options: "Game Options", move_up: "Move Up",
+                move_down: "Move Down", archive_game: "Archive Game", delete_game: "Delete Game", no_archived: "No archived games.",
+                restore: "Restore", delete: "Delete", no_active: "No active games. Create one above!", rolls_recorded: "rolls recorded",
+                active_badge: "ACTIVE", dice_word: "dice", win_abbr: "W", loss_abbr: "L", draw_abbr: "D",
+                toast_switched: "Switched game session", toast_cleared: "Cleared sequence", toast_reset: "Session rolls reset successfully",
+                toast_moved_up: "Moved game up", toast_moved_down: "Moved game down", msg_archived: "Archived", msg_deleted: "Deleted",
+                msg_restored: "Restored", msg_perm_deleted: "Permanently deleted", msg_started: "Started:", msg_logged: "Logged",
+                game_prefix: "Game", total_word: "Total", hits_word: "Hits", crits_word: "Crits", fails_word: "Fails"
+            },
+            zh: {
+                title: "殺戮小隊", no_game: "未選擇遊戲", cloud_saved: "雲端已儲存", local_device: "本機裝置",
+                archived_games: "已封存的遊戲", wh_kill_team: "戰鎚 殺戮小隊", secure_cloud: "安全的雲端骰子機率紀錄",
+                start_new: "開始新遊戲", placeholder_game: "例如：第一場 - 第四桌", create_game: "建立遊戲",
+                your_sessions: "你的遊戲紀錄", logging_for: "紀錄對象：", my_team: "我的隊伍", opponent: "對手",
+                attack_roll: "攻擊擲骰", defense_roll: "防禦擲骰", success: "成功", critical: "爆擊", none: "無",
+                tap_dice: "點擊下方 1-6 點數...", clear: "清除", confirm: "確認", games_tab: "遊戲", log_tab: "紀錄",
+                stats_tab: "生涯統計", reset_logs: "重設紀錄", placeholder_my_faction: "陣營 (例: 特種獸人)",
+                placeholder_my_name: "我的名字", placeholder_opp_faction: "陣營 (例: 仲裁者)", placeholder_opp_name: "對手名字",
+                result: "結果：", win: "勝", loss: "敗", draw: "平", score_breakdown: "比賽分數明細",
+                crit: "爆擊", tac: "戰術", kill: "擊殺", total: "總分", attack_dist: "攻擊擲骰 (1-6 分布)",
+                defense_dist: "防禦擲骰 (1-6 分布)", my: "我方", opp: "敵方", roll_seq_log: "擲骰歷史紀錄",
+                no_seq_yet: "此遊戲尚無擲骰紀錄。", game_options: "遊戲選項", move_up: "上移",
+                move_down: "下移", archive_game: "封存遊戲", delete_game: "刪除遊戲", no_archived: "無已封存的遊戲。",
+                restore: "還原", delete: "永久刪除", no_active: "目前沒有進行中的遊戲，請在上方建立！", rolls_recorded: "筆紀錄",
+                active_badge: "進行中", dice_word: "顆骰子", win_abbr: "勝", loss_abbr: "敗", draw_abbr: "平",
+                toast_switched: "已切換遊戲會話", toast_cleared: "已清除紀錄", toast_reset: "擲骰紀錄已重設",
+                toast_moved_up: "遊戲已上移", toast_moved_down: "遊戲已下移", msg_archived: "已封存", msg_deleted: "已刪除",
+                msg_restored: "已還原", msg_perm_deleted: "已永久刪除", msg_started: "已開始：", msg_logged: "已記錄",
+                game_prefix: "遊戲", total_word: "總計", hits_word: "命中", crits_word: "爆擊", fails_word: "失敗"
+            }
+        };
+
+        let currentLang = localStorage.getItem('killteam_lang') || 'en';
+        
+        window.t = function(key) {
+            return i18n[currentLang][key] || key;
+        };
+
+        window.toggleLanguage = function() {
+            currentLang = currentLang === 'en' ? 'zh' : 'en';
+            localStorage.setItem('killteam_lang', currentLang);
+            applyLanguage();
+        };
+
+        function applyLanguage() {
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if(i18n[currentLang][key]) {
+                    el.innerHTML = i18n[currentLang][key];
+                }
+            });
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if(i18n[currentLang][key]) {
+                    el.placeholder = i18n[currentLang][key];
+                }
+            });
+            const indicator = document.getElementById('lang-indicator');
+            if(indicator) indicator.innerText = currentLang === 'en' ? 'EN' : '中';
+            updateUI();
+            renderSessionsList();
+            renderArchivedList();
+            renderSequencePreview();
+        }
 
         let appData = {
             activeSessionId: null,
@@ -492,7 +568,6 @@
                     const app = initializeApp(firebaseConfig);
                     db = getFirestore(app);
                     auth = getAuth(app);
-
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(auth, __initial_auth_token);
                     } else {
@@ -501,7 +576,6 @@
                     userId = auth.currentUser?.uid || crypto.randomUUID();
                     initCloudSync();
                 } catch (err) {
-                    console.warn("Cloud initialization fallback:", err);
                     initLocalFallback();
                 }
             } else {
@@ -510,17 +584,15 @@
         };
 
         function initLocalFallback() {
-            const saved = localStorage.getItem('killteam_dice_tracker_data_v23');
+            const saved = localStorage.getItem('killteam_dice_tracker_data_v32');
             if (saved) {
                 try {
                     appData = JSON.parse(saved);
-                } catch (e) {
-                    console.error("Failed to parse saved data", e);
-                }
+                } catch (e) {}
             }
             finalizeDataLoad();
             const statusEl = document.getElementById('cloud-status-text');
-            if (statusEl) statusEl.innerText = 'Local Device';
+            if (statusEl) statusEl.innerText = window.t('local_device');
         }
 
         function initCloudSync() {
@@ -528,9 +600,7 @@
                 initLocalFallback();
                 return;
             }
-
-            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v7');
-            
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v15');
             unsubscribeCloud = onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const cloudData = docSnap.data();
@@ -542,76 +612,49 @@
                     appData = {
                         activeSessionId: defaultId,
                         sessions: [{
-                            id: defaultId,
-                            name: 'Game 1',
-                            date: new Date().toLocaleDateString('en-CA'),
-                            myFaction: 'My Team',
-                            oppFaction: 'Opponent',
-                            result: 'active',
-                            scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
-                            archived: false,
-                            rolls: []
+                            id: defaultId, name: `${window.t('game_prefix')} 1`, date: new Date().toLocaleDateString('en-CA'),
+                            myFaction: '', oppFaction: '', myPlayer: '', oppPlayer: '',
+                            result: 'active', scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
+                            archived: false, rolls: []
                         }]
                     };
                     saveAppData();
                 }
                 finalizeDataLoad();
                 const statusEl = document.getElementById('cloud-status-text');
-                if (statusEl) statusEl.innerText = 'Cloud Saved';
-            }, (error) => {
-                console.error("Cloud sync error:", error);
+                if (statusEl) statusEl.innerText = window.t('cloud_saved');
+            }, () => {
                 initLocalFallback();
             });
         }
 
         function finalizeDataLoad() {
-            if (!appData.sessions || !Array.isArray(appData.sessions) || appData.sessions.length === 0) {
+            if (!appData.sessions || appData.sessions.length === 0) {
                 const defaultId = 'game_' + Date.now();
                 appData.sessions = [{
-                    id: defaultId,
-                    name: 'Game 1',
-                    date: new Date().toLocaleDateString('en-CA'),
-                    myFaction: 'My Team',
-                    oppFaction: 'Opponent',
-                    result: 'active',
+                    id: defaultId, name: `${window.t('game_prefix')} 1`, date: new Date().toLocaleDateString('en-CA'),
+                    myFaction: '', oppFaction: '', myPlayer: '', oppPlayer: '', result: 'active',
                     scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
-                    archived: false,
-                    rolls: []
+                    archived: false, rolls: []
                 }];
                 appData.activeSessionId = defaultId;
                 saveAppData();
             } else {
-                appData.sessions.forEach(s => {
-                    if (s.archived === undefined) s.archived = false;
-                    if (!s.scores) {
-                        s.scores = { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 };
-                    }
-                    s.rolls.forEach(r => {
-                        if (!r.rollType) r.rollType = 'attack';
-                    });
-                });
                 if (!appData.activeSessionId || !appData.sessions.find(s => s.id === appData.activeSessionId && !s.archived)) {
                     const firstActive = appData.sessions.find(s => !s.archived);
                     appData.activeSessionId = firstActive ? firstActive.id : null;
                 }
             }
-
-            updateUI();
-            renderSessionsList();
+            applyLanguage();
         }
 
         async function saveAppData() {
-            localStorage.setItem('killteam_dice_tracker_data_v23', JSON.stringify(appData));
-
+            localStorage.setItem('killteam_dice_tracker_data_v32', JSON.stringify(appData));
             if (db && userId) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v7');
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v15');
                     await setDoc(docRef, appData);
-                    const statusEl = document.getElementById('cloud-status-text');
-                    if (statusEl) statusEl.innerText = 'Cloud Saved';
-                } catch (e) {
-                    console.error("Cloud save failed:", e);
-                }
+                } catch (e) {}
             }
         }
 
@@ -631,20 +674,15 @@
 
             const targetView = document.getElementById(`view-${tabId}`);
             if (targetView) targetView.classList.remove('hidden');
-            
             const activeBtn = document.getElementById(`nav-btn-${tabId}`);
-            if (activeBtn) {
-                activeBtn.className = "py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow";
-            }
+            if (activeBtn) activeBtn.className = "py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow";
 
-            if (tabId === 'dashboard') {
-                updateUI();
-            } else if (tabId === 'sessions') {
-                renderSessionsList();
-            } else if (tabId === 'logger') {
+            if (tabId === 'dashboard') updateUI();
+            else if (tabId === 'sessions') renderSessionsList();
+            else if (tabId === 'logger') {
                 const session = getActiveSession();
                 const loggerNameEl = document.getElementById('logger-active-game-name');
-                if (loggerNameEl) loggerNameEl.innerText = session ? session.name : 'No Game Selected';
+                if (loggerNameEl) loggerNameEl.innerText = session ? session.name : window.t('no_game');
             }
         };
 
@@ -673,7 +711,6 @@
             loggerState.rollType = rollType;
             const attackBtn = document.getElementById('rolltype-btn-attack');
             const defenseBtn = document.getElementById('rolltype-btn-defense');
-
             if (rollType === 'attack') {
                 attackBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-2";
                 defenseBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-700 text-gray-300 hover:text-white border border-tactical-600 transition tactile-btn flex items-center justify-center space-x-2";
@@ -685,90 +722,45 @@
 
         function updateThresholdButtonStyles() {
             const activeBgClass = loggerState.role === 'my' ? 'bg-tactical-myTeam border-tactical-myTeam' : 'bg-tactical-opponent border-tactical-opponent';
-            
             for (let i = 2; i <= 6; i++) {
                 const btn = document.getElementById(`thresh-succ-${i}`);
-                if (btn) {
-                    if (i === loggerState.successThreshold) {
-                        btn.className = `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn`;
-                    } else {
-                        btn.className = "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
-                    }
-                }
+                if (btn) btn.className = i === loggerState.successThreshold ? `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn` : "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
             }
-
             ['none', 3, 4, 5, 6].forEach(v => {
                 const btn = document.getElementById(`thresh-crit-${v}`);
-                if (btn) {
-                    if (v === loggerState.critThreshold) {
-                        btn.className = `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn`;
-                    } else {
-                        btn.className = "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
-                    }
-                }
+                if (btn) btn.className = v === loggerState.critThreshold ? `py-2 rounded-xl font-mono font-bold text-xs ${activeBgClass} text-white shadow-md transition tactile-btn` : "py-2 rounded-xl font-mono font-bold text-xs bg-tactical-900 border border-tactical-700 text-gray-300 transition tactile-btn";
             });
         }
 
-        window.setSuccessThreshold = function(val) {
-            loggerState.successThreshold = val;
-            updateThresholdButtonStyles();
-        };
-
-        window.setCritThreshold = function(val) {
-            loggerState.critThreshold = val;
-            updateThresholdButtonStyles();
-        };
-
-        window.tapDie = function(val) {
-            loggerState.currentSequence.push(val);
-            renderSequencePreview();
-        };
-
-        window.clearCurrentSequence = function() {
-            if (loggerState.currentSequence.length > 0) {
-                loggerState.currentSequence.pop();
-                renderSequencePreview();
-            }
-        };
-
-        window.clearAllSequence = function() {
-            loggerState.currentSequence = [];
-            renderSequencePreview();
-            showToast("Cleared sequence");
-        };
+        window.setSuccessThreshold = function(val) { loggerState.successThreshold = val; updateThresholdButtonStyles(); };
+        window.setCritThreshold = function(val) { loggerState.critThreshold = val; updateThresholdButtonStyles(); };
+        window.tapDie = function(val) { loggerState.currentSequence.push(val); renderSequencePreview(); };
+        window.clearCurrentSequence = function() { if (loggerState.currentSequence.length > 0) { loggerState.currentSequence.pop(); renderSequencePreview(); } };
+        window.clearAllSequence = function() { loggerState.currentSequence = []; renderSequencePreview(); showToast(window.t('toast_cleared')); };
 
         function renderSequencePreview() {
             const container = document.getElementById('dice-sequence-container');
             const indicator = document.getElementById('sequence-count-indicator');
             const confirmBtn = document.getElementById('confirm-btn');
-
             if (!container || !indicator || !confirmBtn) return;
-
             container.innerHTML = '';
-            indicator.innerText = `${loggerState.currentSequence.length} dice`;
+            indicator.innerHTML = `${loggerState.currentSequence.length} <span data-i18n="dice_word">${window.t('dice_word')}</span>`;
 
             if (loggerState.currentSequence.length === 0) {
-                container.innerHTML = `<span class="text-xs text-gray-500 italic px-2">Tap 1-6 dice below...</span>`;
+                container.innerHTML = `<span class="text-xs text-gray-500 italic px-2" data-i18n="tap_dice">${window.t('tap_dice')}</span>`;
                 confirmBtn.setAttribute('disabled', 'true');
                 return;
             }
-
             confirmBtn.removeAttribute('disabled');
-
             loggerState.currentSequence.forEach((val) => {
                 let badgeColor = "bg-tactical-danger/20 text-tactical-danger border-tactical-danger/40";
                 if (val > 1) {
                     const isCrit = loggerState.critThreshold !== 'none' && val >= loggerState.critThreshold;
                     const isSucc = val >= loggerState.successThreshold;
-                    if (isCrit) {
-                        badgeColor = "bg-tactical-crit/20 text-tactical-crit border-tactical-crit/40";
-                    } else if (isSucc) {
-                        badgeColor = "bg-tactical-success/20 text-tactical-success border-tactical-success/40";
-                    } else {
-                        badgeColor = "bg-tactical-900 text-gray-400 border-tactical-700";
-                    }
+                    if (isCrit) badgeColor = "bg-tactical-crit/20 text-tactical-crit border-tactical-crit/40";
+                    else if (isSucc) badgeColor = "bg-tactical-success/20 text-tactical-success border-tactical-success/40";
+                    else badgeColor = "bg-tactical-900 text-gray-400 border-tactical-700";
                 }
-
                 const pill = document.createElement('div');
                 pill.className = `flex items-center space-x-1 px-2.5 py-1 rounded-xl border font-mono font-black text-xs ${badgeColor} shadow-sm`;
                 pill.innerHTML = `<span>[${val}]</span>`;
@@ -778,48 +770,27 @@
 
         window.confirmSequence = function() {
             if (loggerState.currentSequence.length === 0) return;
-
             const session = getActiveSession();
             if (!session) return;
-            
-            let hits = 0;
-            let crits = 0;
-            let fails = 0;
-
+            let hits = 0, crits = 0, fails = 0;
             loggerState.currentSequence.forEach(val => {
-                if (val === 1) {
-                    fails++;
-                } else {
+                if (val === 1) fails++;
+                else {
                     const isCrit = loggerState.critThreshold !== 'none' && val >= loggerState.critThreshold;
                     const isSucc = val >= loggerState.successThreshold;
-
-                    if (isCrit) {
-                        crits++;
-                        hits++;
-                    } else if (isSucc) {
-                        hits++;
-                    } else {
-                        fails++;
-                    }
+                    if (isCrit) { crits++; hits++; }
+                    else if (isSucc) hits++;
+                    else fails++;
                 }
             });
-
             const rollRecord = {
-                id: Date.now(),
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                role: loggerState.role,
-                rollType: loggerState.rollType,
-                successThreshold: loggerState.successThreshold,
-                critThreshold: loggerState.critThreshold,
-                dice: [...loggerState.currentSequence],
-                stats: { total: loggerState.currentSequence.length, hits, crits, fails }
+                id: Date.now(), timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+                role: loggerState.role, rollType: loggerState.rollType, successThreshold: loggerState.successThreshold,
+                critThreshold: loggerState.critThreshold, dice: [...loggerState.currentSequence], stats: { total: loggerState.currentSequence.length, hits, crits, fails }
             };
-
             session.rolls.unshift(rollRecord);
             saveAppData();
-
-            showToast(`Logged ${rollRecord.stats.total} ${loggerState.rollType} dice!`);
-
+            showToast(`${window.t('msg_logged')} ${rollRecord.stats.total} ${window.t(loggerState.rollType === 'attack' ? 'attack_roll' : 'defense_roll')}!`);
             loggerState.currentSequence = [];
             renderSequencePreview();
         };
@@ -828,29 +799,21 @@
             const input = document.getElementById('new-game-name');
             const rawName = input ? input.value.trim() : '';
             const activeCount = appData.sessions.filter(s => !s.archived).length;
-            const name = rawName !== '' ? rawName : `Game ${activeCount + 1}`;
-            
+            const name = rawName !== '' ? rawName : `${window.t('game_prefix')} ${activeCount + 1}`;
             const newId = 'game_' + Date.now();
-            const newGame = {
-                id: newId,
-                name: name,
-                date: new Date().toLocaleDateString('en-CA'),
-                myFaction: 'My Team',
-                oppFaction: 'Opponent',
-                result: 'active',
+            appData.sessions.unshift({
+                id: newId, name: name, date: new Date().toLocaleDateString('en-CA'),
+                myFaction: '', oppFaction: '', myPlayer: '', oppPlayer: '', result: 'active',
                 scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
-                archived: false,
-                rolls: []
-            };
-
-            appData.sessions.unshift(newGame);
+                archived: false, rolls: []
+            });
             appData.activeSessionId = newId;
             if (input) input.value = '';
             saveAppData();
             updateUI();
             renderSessionsList();
             window.switchTab('dashboard');
-            showToast(`Started: ${name}`);
+            showToast(`${window.t('msg_started')} ${name}`);
         };
 
         window.setActiveSession = function(id) {
@@ -858,25 +821,12 @@
             saveAppData();
             updateUI();
             window.switchTab('dashboard');
-            showToast(`Switched game session`);
-        };
-
-        window.clearSessionLogs = function() {
-            const session = getActiveSession();
-            if (!session || session.rolls.length === 0) {
-                showToast("No rolls to reset in this game.");
-                return;
-            }
-            if (confirm(`Reset all recorded dice logs for "${session.name}"?`)) {
-                session.rolls = [];
-                saveAppData();
-                updateUI();
-                showToast("Session logs reset successfully");
-            }
+            showToast(window.t('toast_switched'));
         };
 
         window.clearActiveSessionLogs = function() {
-            window.clearSessionLogs();
+            const session = getActiveSession();
+            if (session) { session.rolls = []; saveAppData(); updateUI(); showToast(window.t('toast_reset')); }
         };
 
         window.updateMatchMeta = function() {
@@ -884,31 +834,31 @@
             if (!session) return;
             const myInput = document.getElementById('input-my-faction');
             const oppInput = document.getElementById('input-opp-faction');
-            if (myInput) session.myFaction = myInput.value || 'My Team';
-            if (oppInput) session.oppFaction = oppInput.value || 'Opponent';
+            const myPlayerInput = document.getElementById('input-my-player');
+            const oppPlayerInput = document.getElementById('input-opp-player');
+            if (myInput) session.myFaction = myInput.value;
+            if (oppInput) session.oppFaction = oppInput.value;
+            if (myPlayerInput) session.myPlayer = myPlayerInput.value;
+            if (oppPlayerInput) session.oppPlayer = oppPlayerInput.value;
             saveAppData();
+            updateUI();
             renderSessionsList();
         };
 
         window.updateScores = function() {
             const session = getActiveSession();
             if (!session) return;
-            
             const myCrit = parseInt(document.getElementById('score-my-crit').value) || 0;
             const myTac = parseInt(document.getElementById('score-my-tac').value) || 0;
             const myKill = parseInt(document.getElementById('score-my-kill').value) || 0;
             let myTotal = parseInt(document.getElementById('score-my-total').value) || (myCrit + myTac + myKill);
-
             const oppCrit = parseInt(document.getElementById('score-opp-crit').value) || 0;
             const oppTac = parseInt(document.getElementById('score-opp-tac').value) || 0;
             const oppKill = parseInt(document.getElementById('score-opp-kill').value) || 0;
             let oppTotal = parseInt(document.getElementById('score-opp-total').value) || (oppCrit + oppTac + oppKill);
-
             session.scores = { myCrit, myTac, myKill, myTotal, oppCrit, oppTac, oppKill, oppTotal };
-            
             document.getElementById('score-my-total').value = myTotal;
             document.getElementById('score-opp-total').value = oppTotal;
-
             saveAppData();
             renderSessionsList();
         };
@@ -932,9 +882,7 @@
                         if (r === 'win') btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-success text-white shadow";
                         else if (r === 'loss') btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-danger text-white shadow";
                         else btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-myTeam text-white shadow";
-                    } else {
-                        btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600";
-                    }
+                    } else btn.className = "px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600";
                 }
             });
         }
@@ -949,58 +897,38 @@
             const modal = document.getElementById('game-options-modal');
             if (modal) modal.classList.remove('hidden');
         };
-
-        window.closeGameOptionsModal = function() {
-            const modal = document.getElementById('game-options-modal');
-            if (modal) modal.classList.add('hidden');
-            modalTargetSessionId = null;
-        };
+        window.closeGameOptionsModal = function() { document.getElementById('game-options-modal').classList.add('hidden'); modalTargetSessionId = null; };
 
         window.modalActionMoveUp = function() {
             if (!modalTargetSessionId) return;
             const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
             if (idx > 0) {
-                const temp = appData.sessions[idx];
-                appData.sessions[idx] = appData.sessions[idx - 1];
-                appData.sessions[idx - 1] = temp;
-                saveAppData();
-                renderSessionsList();
-                showToast("Moved game up");
+                const temp = appData.sessions[idx]; appData.sessions[idx] = appData.sessions[idx - 1]; appData.sessions[idx - 1] = temp;
+                saveAppData(); renderSessionsList(); showToast(window.t('toast_moved_up'));
             }
             window.closeGameOptionsModal();
         };
-
         window.modalActionMoveDown = function() {
             if (!modalTargetSessionId) return;
             const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
             if (idx !== -1 && idx < appData.sessions.length - 1) {
-                const temp = appData.sessions[idx];
-                appData.sessions[idx] = appData.sessions[idx + 1];
-                appData.sessions[idx + 1] = temp;
-                saveAppData();
-                renderSessionsList();
-                showToast("Moved game down");
+                const temp = appData.sessions[idx]; appData.sessions[idx] = appData.sessions[idx + 1]; appData.sessions[idx + 1] = temp;
+                saveAppData(); renderSessionsList(); showToast(window.t('toast_moved_down'));
             }
             window.closeGameOptionsModal();
         };
-
         window.modalActionArchive = function() {
             if (!modalTargetSessionId) return;
             const session = appData.sessions.find(s => s.id === modalTargetSessionId);
             if (session) {
                 session.archived = true;
                 if (appData.activeSessionId === modalTargetSessionId) {
-                    const remaining = appData.sessions.find(s => !s.archived);
-                    appData.activeSessionId = remaining ? remaining.id : null;
+                    const remaining = appData.sessions.find(s => !s.archived); appData.activeSessionId = remaining ? remaining.id : null;
                 }
-                saveAppData();
-                renderSessionsList();
-                updateUI();
-                showToast(`Archived "${session.name}"`);
+                saveAppData(); renderSessionsList(); updateUI(); showToast(`${window.t('msg_archived')} "${session.name}"`);
             }
             window.closeGameOptionsModal();
         };
-
         window.modalActionDelete = function() {
             if (!modalTargetSessionId) return;
             const idx = appData.sessions.findIndex(s => s.id === modalTargetSessionId);
@@ -1008,13 +936,9 @@
                 const deletedName = appData.sessions[idx].name;
                 appData.sessions.splice(idx, 1);
                 if (appData.activeSessionId === modalTargetSessionId) {
-                    const remaining = appData.sessions.find(s => !s.archived);
-                    appData.activeSessionId = remaining ? remaining.id : null;
+                    const remaining = appData.sessions.find(s => !s.archived); appData.activeSessionId = remaining ? remaining.id : null;
                 }
-                saveAppData();
-                renderSessionsList();
-                updateUI();
-                showToast(`Deleted "${deletedName}"`);
+                saveAppData(); renderSessionsList(); updateUI(); showToast(`${window.t('msg_deleted')} "${deletedName}"`);
             }
             window.closeGameOptionsModal();
         };
@@ -1022,137 +946,100 @@
         window.toggleArchiveModal = function() {
             const modal = document.getElementById('archive-modal');
             if (!modal) return;
-            if (modal.classList.contains('hidden')) {
-                renderArchivedList();
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
-            }
+            if (modal.classList.contains('hidden')) { renderArchivedList(); modal.classList.remove('hidden'); }
+            else modal.classList.add('hidden');
         };
 
         function renderArchivedList() {
             const container = document.getElementById('archived-games-list');
             if (!container) return;
             container.innerHTML = '';
-
             const archivedSessions = appData.sessions.filter(s => s.archived);
             const badge = document.getElementById('archive-count-badge');
             if (badge) badge.innerText = archivedSessions.length;
-
             if (archivedSessions.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No archived games.</p>`;
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4" data-i18n="no_archived">${window.t('no_archived')}</p>`;
                 return;
             }
-
             archivedSessions.forEach(s => {
                 const card = document.createElement('div');
                 card.className = "p-3 rounded-xl bg-tactical-900 border border-tactical-700 flex justify-between items-center text-xs";
                 card.innerHTML = `
-                    <div>
-                        <h4 class="font-bold text-white">${s.name}</h4>
-                        <p class="text-[10px] text-gray-400">${s.date} • ${s.rolls.length} roll entries</p>
-                    </div>
+                    <div><h4 class="font-bold text-white">${s.name}</h4><p class="text-[10px] text-gray-400">${s.date} • ${s.rolls.length} ${window.t('rolls_recorded')}</p></div>
                     <div class="flex items-center space-x-1.5">
-                        <button type="button" onclick="window.unarchiveSession('${s.id}')" class="px-2.5 py-1 bg-tactical-myTeam text-white rounded-lg font-bold">Restore</button>
-                        <button type="button" onclick="window.permanentDeleteArchivedSession('${s.id}')" class="px-2.5 py-1 bg-tactical-danger/20 hover:bg-tactical-danger/30 text-tactical-danger rounded-lg font-bold" title="Delete Permanently">Delete</button>
+                        <button type="button" onclick="window.unarchiveSession('${s.id}')" class="px-2.5 py-1 bg-tactical-myTeam text-white rounded-lg font-bold">${window.t('restore')}</button>
+                        <button type="button" onclick="window.permanentDeleteArchivedSession('${s.id}')" class="px-2.5 py-1 bg-tactical-danger/20 hover:bg-tactical-danger/30 text-tactical-danger rounded-lg font-bold">${window.t('delete')}</button>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
-
         window.unarchiveSession = function(id) {
             const session = appData.sessions.find(s => s.id === id);
-            if (session) {
-                session.archived = false;
-                saveAppData();
-                renderSessionsList();
-                renderArchivedList();
-                showToast(`Restored "${session.name}"`);
-            }
+            if (session) { session.archived = false; saveAppData(); renderSessionsList(); renderArchivedList(); showToast(`${window.t('msg_restored')} "${session.name}"`); }
         };
-
         window.permanentDeleteArchivedSession = function(id) {
             const idx = appData.sessions.findIndex(s => s.id === id);
-            if (idx !== -1) {
-                const deletedName = appData.sessions[idx].name;
-                appData.sessions.splice(idx, 1);
-                saveAppData();
-                renderSessionsList();
-                renderArchivedList();
-                showToast(`Permanently deleted "${deletedName}"`);
-            }
+            if (idx !== -1) { const deletedName = appData.sessions[idx].name; appData.sessions.splice(idx, 1); saveAppData(); renderSessionsList(); renderArchivedList(); showToast(`${window.t('msg_perm_deleted')} "${deletedName}"`); }
         };
 
         function updateUI() {
             const session = getActiveSession();
             if (!session) return;
-            
             const activeLabel = document.getElementById('active-session-label');
             const dashName = document.getElementById('dash-session-name');
             const loggerName = document.getElementById('logger-active-game-name');
             const dashDate = document.getElementById('dash-session-date');
-            const myFactionInput = document.getElementById('input-my-faction');
-            const oppFactionInput = document.getElementById('input-opp-faction');
-
+            
             if (activeLabel) activeLabel.innerText = session.name;
             if (dashName) dashName.innerText = session.name;
             if (loggerName) loggerName.innerText = session.name;
             
             let statusText = `${session.date} • `;
-            if (session.result === 'win') statusText += 'Win 🏆';
-            else if (session.result === 'loss') statusText += 'Loss ❌';
-            else if (session.result === 'draw') statusText += 'Draw 🤝';
-            else statusText += 'In Progress';
+            if (session.result === 'win') statusText += `${window.t('win')} 🏆`;
+            else if (session.result === 'loss') statusText += `${window.t('loss')} ❌`;
+            else if (session.result === 'draw') statusText += `${window.t('draw')} 🤝`;
+            else statusText += window.t('active_badge');
             if (dashDate) dashDate.innerText = statusText;
 
-            if (myFactionInput) myFactionInput.value = session.myFaction || 'My Team';
-            if (oppFactionInput) oppFactionInput.value = session.oppFaction || 'Opponent';
+            const myTeamName = session.myFaction || window.t('my_team');
+            const oppTeamName = session.oppFaction || window.t('opponent');
+
+            const myFactionInput = document.getElementById('input-my-faction');
+            const oppFactionInput = document.getElementById('input-opp-faction');
+            const myPlayerInput = document.getElementById('input-my-player');
+            const oppPlayerInput = document.getElementById('input-opp-player');
+            
+            if (myFactionInput) myFactionInput.value = session.myFaction || '';
+            if (oppFactionInput) oppFactionInput.value = session.oppFaction || '';
+            if (myPlayerInput) myPlayerInput.value = session.myPlayer || '';
+            if (oppPlayerInput) oppPlayerInput.value = session.oppPlayer || '';
+
+            const labelMyTeamScore = document.getElementById('label-my-team-score');
+            const labelOppTeamScore = document.getElementById('label-opp-team-score');
+            if (labelMyTeamScore) labelMyTeamScore.innerText = session.myPlayer ? `${myTeamName} (${session.myPlayer})` : myTeamName;
+            if (labelOppTeamScore) labelOppTeamScore.innerText = session.oppPlayer ? `${oppTeamName} (${session.oppPlayer})` : oppTeamName;
 
             if (session.scores) {
                 document.getElementById('score-my-crit').value = session.scores.myCrit || 0;
                 document.getElementById('score-my-tac').value = session.scores.myTac || 0;
                 document.getElementById('score-my-kill').value = session.scores.myKill || 0;
                 document.getElementById('score-my-total').value = session.scores.myTotal || 0;
-
                 document.getElementById('score-opp-crit').value = session.scores.oppCrit || 0;
                 document.getElementById('score-opp-tac').value = session.scores.oppTac || 0;
                 document.getElementById('score-opp-kill').value = session.scores.oppKill || 0;
                 document.getElementById('score-opp-total').value = session.scores.oppTotal || 0;
             }
-
             updateResultButtons();
 
-            let attackMyTotal = 0, attackOppTotal = 0;
-            let attackMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-            let attackOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-
-            let defenseMyTotal = 0, defenseOppTotal = 0;
-            let defenseMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-            let defenseOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
-
+            let attackMyTotal = 0, attackOppTotal = 0, attackMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }, attackOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
+            let defenseMyTotal = 0, defenseOppTotal = 0, defenseMyFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 }, defenseOppFaces = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0 };
             session.rolls.forEach(r => {
                 const isAttack = (r.rollType || 'attack') === 'attack';
                 if (r.role === 'my') {
-                    r.dice.forEach(d => {
-                        if (isAttack) {
-                            if (attackMyFaces[d] !== undefined) attackMyFaces[d]++;
-                            attackMyTotal++;
-                        } else {
-                            if (defenseMyFaces[d] !== undefined) defenseMyFaces[d]++;
-                            defenseMyTotal++;
-                        }
-                    });
+                    r.dice.forEach(d => { if (isAttack) { attackMyFaces[d]++; attackMyTotal++; } else { defenseMyFaces[d]++; defenseMyTotal++; } });
                 } else {
-                    r.dice.forEach(d => {
-                        if (isAttack) {
-                            if (attackOppFaces[d] !== undefined) attackOppFaces[d]++;
-                            attackOppTotal++;
-                        } else {
-                            if (defenseOppFaces[d] !== undefined) defenseOppFaces[d]++;
-                            defenseOppTotal++;
-                        }
-                    });
+                    r.dice.forEach(d => { if (isAttack) { attackOppFaces[d]++; attackOppTotal++; } else { defenseOppFaces[d]++; defenseOppTotal++; } });
                 }
             });
 
@@ -1172,37 +1059,27 @@
             const historyList = document.getElementById('session-history-list');
             if (historyList) {
                 historyList.innerHTML = '';
-
                 if (session.rolls.length === 0) {
-                    historyList.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No dice sequences recorded in this game yet.</p>`;
+                    historyList.innerHTML = `<p class="text-xs text-gray-500 text-center py-4" data-i18n="no_seq_yet">${window.t('no_seq_yet')}</p>`;
                     return;
                 }
-
                 session.rolls.forEach(r => {
                     const item = document.createElement('div');
                     item.className = "bg-tactical-900/90 border border-tactical-700/80 rounded-xl p-3.5 flex flex-col space-y-2 text-xs shadow-md";
-                    
                     let diceHtml = r.dice.map(d => `<span class="px-2 py-0.5 rounded-lg bg-tactical-800 text-white font-mono font-bold border border-tactical-700/50">${d}</span>`).join('');
-                    const roleBadge = r.role === 'my' ? '<span class="text-[9px] bg-tactical-myTeam/20 text-blue-400 px-1.5 py-0.5 rounded font-bold">My Team</span>' : '<span class="text-[9px] bg-tactical-opponent/20 text-orange-400 px-1.5 py-0.5 rounded font-bold">Opponent</span>';
-                    const rollTypeBadge = `<span class="text-[9px] bg-tactical-700 text-gray-200 px-1.5 py-0.5 rounded font-bold uppercase">${r.rollType || 'attack'}</span>`;
-
+                    const roleBadge = r.role === 'my' ? `<span class="text-[9px] bg-tactical-myTeam/20 text-blue-400 px-1.5 py-0.5 rounded font-bold">${myTeamName}</span>` : `<span class="text-[9px] bg-tactical-opponent/20 text-orange-400 px-1.5 py-0.5 rounded font-bold">${oppTeamName}</span>`;
+                    const rollTypeBadge = `<span class="text-[9px] bg-tactical-700 text-gray-200 px-1.5 py-0.5 rounded font-bold uppercase">${window.t(r.rollType === 'attack' ? 'attack_roll' : 'defense_roll')}</span>`;
                     item.innerHTML = `
                         <div class="flex justify-between items-center">
-                            <div class="flex items-center space-x-1.5">
-                                ${roleBadge}
-                                ${rollTypeBadge}
-                                <span class="font-bold text-gray-300">(${r.successThreshold}+)</span>
-                            </div>
+                            <div class="flex items-center space-x-1.5">${roleBadge}${rollTypeBadge}<span class="font-bold text-gray-300">(${r.successThreshold}+)</span></div>
                             <span class="text-[10px] text-gray-400 font-mono">${r.timestamp}</span>
                         </div>
-                        <div class="flex flex-wrap gap-1.5 items-center">
-                            ${diceHtml}
-                        </div>
+                        <div class="flex flex-wrap gap-1.5 items-center">${diceHtml}</div>
                         <div class="flex justify-between items-center text-[11px] pt-2 border-t border-tactical-700/50 text-gray-300">
-                            <span>Total: <strong>${r.stats.total}</strong></span>
-                            <span class="text-tactical-success font-bold">Hits: ${r.stats.hits}</span>
-                            <span class="text-tactical-crit font-bold">Crits: ${r.stats.crits}</span>
-                            <span class="text-tactical-danger font-bold">Fails: ${r.stats.fails}</span>
+                            <span>${window.t('total_word')}: <strong>${r.stats.total}</strong></span>
+                            <span class="text-tactical-success font-bold">${window.t('hits_word')}: ${r.stats.hits}</span>
+                            <span class="text-tactical-crit font-bold">${window.t('crits_word')}: ${r.stats.crits}</span>
+                            <span class="text-tactical-danger font-bold">${window.t('fails_word')}: ${r.stats.fails}</span>
                         </div>
                     `;
                     historyList.appendChild(item);
@@ -1214,26 +1091,15 @@
             const chartContainer = document.getElementById(`distribution-chart-${type}`);
             const tableBody = document.getElementById(`distribution-table-${type}`);
             if (!chartContainer || !tableBody) return;
-
-            chartContainer.innerHTML = '';
-            tableBody.innerHTML = '';
-
+            chartContainer.innerHTML = ''; tableBody.innerHTML = '';
             const maxCount = Math.max(1, ...Object.values(myFaces), ...Object.values(oppFaces));
-
             const chartWrapper = document.createElement('div');
             chartWrapper.className = "bg-tactical-900/60 p-3 rounded-2xl border border-tactical-700/50 relative space-y-3";
-            
-            let barsHtml = `
-                <div class="relative h-32 flex items-end justify-between px-2 pt-6 pb-2">
-                    <div class="absolute top-[45%] left-0 right-0 border-t border-dashed border-gray-600/70 z-0"></div>
-            `;
-
+            let barsHtml = `<div class="relative h-32 flex items-end justify-between px-2 pt-6 pb-2"><div class="absolute top-[45%] left-0 right-0 border-t border-dashed border-gray-600/70 z-0"></div>`;
             for (let i = 1; i <= 6; i++) {
-                const myCount = myFaces[i];
-                const oppCount = oppFaces[i];
+                const myCount = myFaces[i], oppCount = oppFaces[i];
                 const myHeight = myTotal > 0 ? Math.max(8, Math.min(100, (myCount / maxCount) * 85)) : 6;
                 const oppHeight = oppTotal > 0 ? Math.max(8, Math.min(100, (oppCount / maxCount) * 85)) : 6;
-
                 barsHtml += `
                     <div class="flex-1 flex flex-col items-center justify-end h-full z-10 px-0.5">
                         <div class="flex items-end justify-center space-x-1 w-full h-full">
@@ -1246,45 +1112,20 @@
                                 <div class="w-3 sm:w-3.5 bg-tactical-opponent rounded-t transition-all duration-300 shadow" style="height: ${oppCount > 0 ? oppHeight : 4}px"></div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             }
-
             barsHtml += `</div>`;
-
-            let pipsIconsHtml = `
-                <div class="grid grid-cols-6 gap-1 pt-2 border-t border-tactical-700/60">
-            `;
-
-            for (let i = 1; i <= 6; i++) {
-                pipsIconsHtml += `
-                    <div class="flex justify-center items-center py-1.5 bg-tactical-800/80 rounded-xl border border-tactical-700/60 shadow-sm">
-                        ${pipSVGs[i]}
-                    </div>
-                `;
-            }
+            let pipsIconsHtml = `<div class="grid grid-cols-6 gap-1 pt-2 border-t border-tactical-700/60">`;
+            for (let i = 1; i <= 6; i++) pipsIconsHtml += `<div class="flex justify-center items-center py-1.5 bg-tactical-800/80 rounded-xl border border-tactical-700/60 shadow-sm">${pipSVGs[i]}</div>`;
             pipsIconsHtml += `</div>`;
-
             chartWrapper.innerHTML = barsHtml + pipsIconsHtml;
             chartContainer.appendChild(chartWrapper);
-
             for (let i = 1; i <= 6; i++) {
-                const myCount = myFaces[i];
-                const myPct = myTotal > 0 ? ((myCount / myTotal) * 100).toFixed(1) : '0.0';
-                const oppCount = oppFaces[i];
-                const oppPct = oppTotal > 0 ? ((oppCount / oppTotal) * 100).toFixed(1) : '0.0';
-
+                const myCount = myFaces[i], myPct = myTotal > 0 ? ((myCount / myTotal) * 100).toFixed(1) : '0.0';
+                const oppCount = oppFaces[i], oppPct = oppTotal > 0 ? ((oppCount / oppTotal) * 100).toFixed(1) : '0.0';
                 const row = document.createElement('div');
                 row.className = "flex justify-between items-center text-xs font-mono py-1.5 border-b border-tactical-700/30";
-                row.innerHTML = `
-                    <div class="flex items-center space-x-2 w-12">
-                        <div class="w-6 h-6 bg-tactical-900 rounded-lg border border-tactical-700 flex items-center justify-center shadow-sm">
-                            ${pipSVGs[i]}
-                        </div>
-                    </div>
-                    <span class="text-tactical-myTeam font-bold">${myCount} (${myPct}%)</span>
-                    <span class="text-tactical-opponent font-bold">${oppCount} (${oppPct}%)</span>
-                `;
+                row.innerHTML = `<div class="flex items-center space-x-2 w-12"><div class="w-6 h-6 bg-tactical-900 rounded-lg border border-tactical-700 flex items-center justify-center shadow-sm">${pipSVGs[i]}</div></div><span class="text-tactical-myTeam font-bold">${myCount} (${myPct}%)</span><span class="text-tactical-opponent font-bold">${oppCount} (${oppPct}%)</span>`;
                 tableBody.appendChild(row);
             }
         }
@@ -1293,68 +1134,57 @@
             const container = document.getElementById('sessions-list-container');
             if (!container) return;
             container.innerHTML = '';
-
             const activeSessions = appData.sessions.filter(s => !s.archived);
-            const archivedCount = appData.sessions.filter(s => s.archived).length;
             const badge = document.getElementById('archive-count-badge');
-            if (badge) badge.innerText = archivedCount;
-
+            if (badge) badge.innerText = appData.sessions.filter(s => s.archived).length;
+            let wins = 0, losses = 0, draws = 0;
+            
             if (activeSessions.length === 0) {
-                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4">No active games. Create one above!</p>`;
-                return;
-            }
+                container.innerHTML = `<p class="text-xs text-gray-500 text-center py-4" data-i18n="no_active">${window.t('no_active')}</p>`;
+            } else {
+                activeSessions.forEach(s => {
+                    const isActive = s.id === appData.activeSessionId;
+                    const totalRolls = s.rolls.reduce((acc, r) => acc + r.stats.total, 0);
+                    if (s.result === 'win') wins++; else if (s.result === 'loss') losses++; else if (s.result === 'draw') draws++;
+                    const card = document.createElement('div');
+                    card.className = `p-3.5 rounded-2xl border flex justify-between items-center transition shadow-md ${isActive ? 'bg-tactical-700/60 border-tactical-myTeam' : 'bg-tactical-900/90 border-tactical-700/80 hover:border-gray-500'}`;
+                    
+                    let resultBadge = '';
+                    if (s.result === 'win') resultBadge = `<span class="text-[9px] bg-tactical-success text-white px-2 py-0.5 rounded-full font-bold">${window.t('win')}</span>`;
+                    else if (s.result === 'loss') resultBadge = `<span class="text-[9px] bg-tactical-danger text-white px-2 py-0.5 rounded-full font-bold">${window.t('loss')}</span>`;
+                    else if (s.result === 'draw') resultBadge = `<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-bold">${window.t('draw')}</span>`;
+                    
+                    let scorePreview = '';
+                    if (s.scores && (s.scores.myTotal > 0 || s.scores.oppTotal > 0)) scorePreview = `<span class="text-[10px] bg-tactical-800 border border-tactical-600 text-white px-2 py-0.5 rounded-full font-mono font-extrabold">${s.scores.myTotal} - ${s.scores.oppTotal}</span>`;
 
-            activeSessions.forEach(s => {
-                const isActive = s.id === appData.activeSessionId;
-                const totalRolls = s.rolls.reduce((acc, r) => acc + r.stats.total, 0);
-
-                const card = document.createElement('div');
-                card.className = `p-3.5 rounded-2xl border flex justify-between items-center transition shadow-md ${isActive ? 'bg-tactical-700/60 border-tactical-myTeam' : 'bg-tactical-900/90 border-tactical-700/80 hover:border-gray-500'}`;
-
-                let resultBadge = '';
-                if (s.result === 'win') {
-                    resultBadge = '<span class="text-[9px] bg-tactical-success text-white px-2 py-0.5 rounded-full font-bold">Win</span>';
-                } else if (s.result === 'loss') {
-                    resultBadge = '<span class="text-[9px] bg-tactical-danger text-white px-2 py-0.5 rounded-full font-bold">Loss</span>';
-                } else if (s.result === 'draw') {
-                    resultBadge = '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-bold">Draw</span>';
-                }
-
-                let scorePreview = '';
-                if (s.scores && (s.scores.myTotal > 0 || s.scores.oppTotal > 0)) {
-                    scorePreview = `<span class="text-[10px] bg-tactical-800 border border-tactical-600 text-white px-2 py-0.5 rounded-full font-mono font-extrabold">${s.scores.myTotal} - ${s.scores.oppTotal}</span>`;
-                }
-
-                card.innerHTML = `
-                    <div class="space-y-1 flex-1 cursor-pointer" onclick="window.setActiveSession('${s.id}')">
-                        <div class="flex items-center space-x-2">
-                            <h4 class="font-extrabold text-xs text-white">${s.name}</h4>
-                            ${scorePreview}
-                            ${resultBadge}
-                            ${isActive ? '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-extrabold tracking-wide">ACTIVE</span>' : ''}
+                    card.innerHTML = `
+                        <div class="space-y-1 flex-1 cursor-pointer" onclick="window.setActiveSession('${s.id}')">
+                            <div class="flex items-center space-x-2">
+                                <h4 class="font-extrabold text-xs text-white">${s.name}</h4>
+                                ${scorePreview}${resultBadge}
+                                ${isActive ? `<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-extrabold tracking-wide">${window.t('active_badge')}</span>` : ''}
+                            </div>
+                            <p class="text-[10px] text-gray-400">${s.date} • <span class="font-mono">${totalRolls}</span> ${window.t('rolls_recorded')}</p>
                         </div>
-                        <p class="text-[10px] text-gray-400">${s.date} • <span class="font-mono">${totalRolls}</span> rolls recorded</p>
-                    </div>
-                    <div class="flex items-center space-x-2 pl-2">
-                        <button type="button" onclick="window.openGameOptions('${s.id}', event)" class="w-8 h-8 rounded-xl bg-tactical-800 hover:bg-tactical-700 border border-tactical-600 flex items-center justify-center text-gray-300 transition" title="Game Options">
-                            <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
+                        <div class="flex items-center space-x-2 pl-2">
+                            <button type="button" onclick="window.openGameOptions('${s.id}', event)" class="w-8 h-8 rounded-xl bg-tactical-800 hover:bg-tactical-700 border border-tactical-600 flex items-center justify-center text-gray-300 transition">
+                                <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            }
+            const elW = document.getElementById('tally-w'), elL = document.getElementById('tally-l'), elD = document.getElementById('tally-d');
+            if (elW) elW.innerText = wins; if (elL) elL.innerText = losses; if (elD) elD.innerText = draws;
         }
 
         function showToast(message) {
             const toast = document.getElementById('toast');
             if (!toast) return;
             document.getElementById('toast-msg').innerText = message;
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            toast.classList.add('opacity-100');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 2500);
+            toast.classList.remove('opacity-0', 'pointer-events-none'); toast.classList.add('opacity-100');
+            setTimeout(() => { toast.classList.remove('opacity-100'); toast.classList.add('opacity-0', 'pointer-events-none'); }, 2500);
         }
     </script>
 </body>
