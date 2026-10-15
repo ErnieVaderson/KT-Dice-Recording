@@ -107,7 +107,7 @@
                     </div>
                     <div>
                         <h2 class="font-black text-sm text-white uppercase tracking-wider">Warhammer Kill Team</h2>
-                        <p class="text-[11px] text-gray-400">Secure Account Cloud-Saved Dice Odds</p>
+                        <p class="text-[11px] text-gray-400">Secure Cloud-Saved Dice Odds</p>
                     </div>
                 </div>
             </div>
@@ -154,12 +154,13 @@
                 </button>
             </div>
 
-            <div class="bg-tactical-800/90 p-1.5 rounded-2xl border border-tactical-700/80 shadow-lg backdrop-blur flex items-center justify-between space-x-1.5">
-                <button type="button" onclick="window.setLoggerRollType('attack')" id="rolltype-btn-attack" class="flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5">
+            <!-- Attack Roll & Defense Roll Selection Bars -->
+            <div class="space-y-2">
+                <button type="button" onclick="window.setLoggerRollType('attack')" id="rolltype-btn-attack" class="w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-sword text-xs"></i>
                     <span>Attack Roll</span>
                 </button>
-                <button type="button" onclick="window.setLoggerRollType('defense')" id="rolltype-btn-defense" class="flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5">
+                <button type="button" onclick="window.setLoggerRollType('defense')" id="rolltype-btn-defense" class="w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-700 text-gray-300 hover:text-white border border-tactical-600 transition tactile-btn flex items-center justify-center space-x-2">
                     <i class="fa-solid fa-shield-halved text-xs"></i>
                     <span>Defense Roll</span>
                 </button>
@@ -230,7 +231,7 @@
             </div>
         </section>
 
-        <!-- DASHBOARD / CAREER STATS VIEW -->
+        <!-- DASHBOARD VIEW -->
         <section id="view-dashboard" class="space-y-4 hidden">
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <div class="flex items-center justify-between">
@@ -267,6 +268,58 @@
                             <button type="button" onclick="window.setMatchResult('win')" id="res-btn-win" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Win</button>
                             <button type="button" onclick="window.setMatchResult('loss')" id="res-btn-loss" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Loss</button>
                             <button type="button" onclick="window.setMatchResult('draw')" id="res-btn-draw" class="px-3 py-1 rounded-lg text-xs font-bold transition bg-tactical-700 text-gray-400 hover:text-white border border-tactical-600">Draw</button>
+                        </div>
+                    </div>
+
+                    <!-- Match Scoring Breakdown -->
+                    <div class="pt-2 border-t border-tactical-700/60 space-y-2">
+                        <span class="text-[10px] font-extrabold uppercase text-gray-400 block text-center">Match Scores Breakdown</span>
+                        <div class="grid grid-cols-2 gap-3">
+                            <!-- My Team Scores -->
+                            <div class="bg-tactical-800/80 p-2 rounded-xl border border-tactical-myTeam/30 space-y-1.5">
+                                <span class="text-[10px] font-extrabold text-blue-400 block text-center">My Team Scores</span>
+                                <div class="grid grid-cols-4 gap-1 text-center">
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Crit Op</span>
+                                        <input type="number" min="0" max="10" id="score-my-crit" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Tac Op</span>
+                                        <input type="number" min="0" max="10" id="score-my-tac" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Kill Op</span>
+                                        <input type="number" min="0" max="10" id="score-my-kill" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-tactical-myTeam">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-blue-400 block font-extrabold">Total</span>
+                                        <input type="number" min="0" max="30" id="score-my-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-blue-500/60 rounded text-center text-xs font-mono font-bold text-blue-400 py-1 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Opponent Scores -->
+                            <div class="bg-tactical-800/80 p-2 rounded-xl border border-orange-500/30 space-y-1.5">
+                                <span class="text-[10px] font-extrabold text-orange-400 block text-center">Opponent Scores</span>
+                                <div class="grid grid-cols-4 gap-1 text-center">
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Crit Op</span>
+                                        <input type="number" min="0" max="10" id="score-opp-crit" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Tac Op</span>
+                                        <input type="number" min="0" max="10" id="score-opp-tac" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-gray-400 block font-bold">Kill Op</span>
+                                        <input type="number" min="0" max="10" id="score-opp-kill" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-tactical-700 rounded text-center text-xs font-mono font-bold text-white py-1 focus:outline-none focus:border-orange-500">
+                                    </div>
+                                    <div>
+                                        <span class="text-[9px] text-orange-400 block font-extrabold">Total</span>
+                                        <input type="number" min="0" max="30" id="score-opp-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-orange-500/60 rounded text-center text-xs font-mono font-bold text-orange-400 py-1 focus:outline-none">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -373,6 +426,7 @@
         </div>
     </div>
 
+    <!-- BOTTOM NAVIGATION BAR -->
     <footer class="fixed bottom-0 left-0 right-0 bg-tactical-800/95 backdrop-blur-md border-t border-tactical-700/60 p-2 max-w-md mx-auto z-40 shadow-2xl">
         <div class="grid grid-cols-3 gap-2">
             <button type="button" onclick="window.switchTab('sessions')" id="nav-btn-sessions" class="py-2.5 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center space-y-1 bg-tactical-myTeam text-white shadow">
@@ -456,7 +510,7 @@
         };
 
         function initLocalFallback() {
-            const saved = localStorage.getItem('killteam_dice_tracker_data_v21');
+            const saved = localStorage.getItem('killteam_dice_tracker_data_v23');
             if (saved) {
                 try {
                     appData = JSON.parse(saved);
@@ -475,7 +529,7 @@
                 return;
             }
 
-            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v5');
+            const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v7');
             
             unsubscribeCloud = onSnapshot(docRef, (docSnap) => {
                 if (docSnap.exists()) {
@@ -494,6 +548,7 @@
                             myFaction: 'My Team',
                             oppFaction: 'Opponent',
                             result: 'active',
+                            scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
                             archived: false,
                             rolls: []
                         }]
@@ -519,6 +574,7 @@
                     myFaction: 'My Team',
                     oppFaction: 'Opponent',
                     result: 'active',
+                    scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
                     archived: false,
                     rolls: []
                 }];
@@ -527,6 +583,9 @@
             } else {
                 appData.sessions.forEach(s => {
                     if (s.archived === undefined) s.archived = false;
+                    if (!s.scores) {
+                        s.scores = { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 };
+                    }
                     s.rolls.forEach(r => {
                         if (!r.rollType) r.rollType = 'attack';
                     });
@@ -542,11 +601,11 @@
         }
 
         async function saveAppData() {
-            localStorage.setItem('killteam_dice_tracker_data_v21', JSON.stringify(appData));
+            localStorage.setItem('killteam_dice_tracker_data_v23', JSON.stringify(appData));
 
             if (db && userId) {
                 try {
-                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v5');
+                    const docRef = doc(db, 'artifacts', appId, 'users', userId, 'data', 'killteam_state_v7');
                     await setDoc(docRef, appData);
                     const statusEl = document.getElementById('cloud-status-text');
                     if (statusEl) statusEl.innerText = 'Cloud Saved';
@@ -616,11 +675,11 @@
             const defenseBtn = document.getElementById('rolltype-btn-defense');
 
             if (rollType === 'attack') {
-                attackBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5";
-                defenseBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5";
+                attackBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-danger text-white shadow transition tactile-btn flex items-center justify-center space-x-2";
+                defenseBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-700 text-gray-300 hover:text-white border border-tactical-600 transition tactile-btn flex items-center justify-center space-x-2";
             } else {
-                attackBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white transition tactile-btn flex items-center justify-center space-x-1.5";
-                defenseBtn.className = "flex-1 py-2 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn flex items-center justify-center space-x-1.5";
+                attackBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-700 text-gray-300 hover:text-white border border-tactical-600 transition tactile-btn flex items-center justify-center space-x-2";
+                defenseBtn.className = "w-full py-2.5 rounded-xl text-xs font-bold bg-tactical-myTeam text-white shadow transition tactile-btn flex items-center justify-center space-x-2";
             }
         };
 
@@ -779,6 +838,7 @@
                 myFaction: 'My Team',
                 oppFaction: 'Opponent',
                 result: 'active',
+                scores: { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 },
                 archived: false,
                 rolls: []
             };
@@ -827,6 +887,30 @@
             if (myInput) session.myFaction = myInput.value || 'My Team';
             if (oppInput) session.oppFaction = oppInput.value || 'Opponent';
             saveAppData();
+            renderSessionsList();
+        };
+
+        window.updateScores = function() {
+            const session = getActiveSession();
+            if (!session) return;
+            
+            const myCrit = parseInt(document.getElementById('score-my-crit').value) || 0;
+            const myTac = parseInt(document.getElementById('score-my-tac').value) || 0;
+            const myKill = parseInt(document.getElementById('score-my-kill').value) || 0;
+            let myTotal = parseInt(document.getElementById('score-my-total').value) || (myCrit + myTac + myKill);
+
+            const oppCrit = parseInt(document.getElementById('score-opp-crit').value) || 0;
+            const oppTac = parseInt(document.getElementById('score-opp-tac').value) || 0;
+            const oppKill = parseInt(document.getElementById('score-opp-kill').value) || 0;
+            let oppTotal = parseInt(document.getElementById('score-opp-total').value) || (oppCrit + oppTac + oppKill);
+
+            session.scores = { myCrit, myTac, myKill, myTotal, oppCrit, oppTac, oppKill, oppTotal };
+            
+            document.getElementById('score-my-total').value = myTotal;
+            document.getElementById('score-opp-total').value = oppTotal;
+
+            saveAppData();
+            renderSessionsList();
         };
 
         window.setMatchResult = function(res) {
@@ -1025,6 +1109,18 @@
             if (myFactionInput) myFactionInput.value = session.myFaction || 'My Team';
             if (oppFactionInput) oppFactionInput.value = session.oppFaction || 'Opponent';
 
+            if (session.scores) {
+                document.getElementById('score-my-crit').value = session.scores.myCrit || 0;
+                document.getElementById('score-my-tac').value = session.scores.myTac || 0;
+                document.getElementById('score-my-kill').value = session.scores.myKill || 0;
+                document.getElementById('score-my-total').value = session.scores.myTotal || 0;
+
+                document.getElementById('score-opp-crit').value = session.scores.oppCrit || 0;
+                document.getElementById('score-opp-tac').value = session.scores.oppTac || 0;
+                document.getElementById('score-opp-kill').value = session.scores.oppKill || 0;
+                document.getElementById('score-opp-total').value = session.scores.oppTotal || 0;
+            }
+
             updateResultButtons();
 
             let attackMyTotal = 0, attackOppTotal = 0;
@@ -1216,14 +1312,24 @@
                 card.className = `p-3.5 rounded-2xl border flex justify-between items-center transition shadow-md ${isActive ? 'bg-tactical-700/60 border-tactical-myTeam' : 'bg-tactical-900/90 border-tactical-700/80 hover:border-gray-500'}`;
 
                 let resultBadge = '';
-                if (s.result === 'win') resultBadge = '<span class="text-[9px] bg-tactical-success text-white px-2 py-0.5 rounded-full font-bold">Win</span>';
-                else if (s.result === 'loss') resultBadge = '<span class="text-[9px] bg-tactical-danger text-white px-2 py-0.5 rounded-full font-bold">Loss</span>';
-                else if (s.result === 'draw') resultBadge = '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-bold">Draw</span>';
+                if (s.result === 'win') {
+                    resultBadge = '<span class="text-[9px] bg-tactical-success text-white px-2 py-0.5 rounded-full font-bold">Win</span>';
+                } else if (s.result === 'loss') {
+                    resultBadge = '<span class="text-[9px] bg-tactical-danger text-white px-2 py-0.5 rounded-full font-bold">Loss</span>';
+                } else if (s.result === 'draw') {
+                    resultBadge = '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-bold">Draw</span>';
+                }
+
+                let scorePreview = '';
+                if (s.scores && (s.scores.myTotal > 0 || s.scores.oppTotal > 0)) {
+                    scorePreview = `<span class="text-[10px] bg-tactical-800 border border-tactical-600 text-white px-2 py-0.5 rounded-full font-mono font-extrabold">${s.scores.myTotal} - ${s.scores.oppTotal}</span>`;
+                }
 
                 card.innerHTML = `
                     <div class="space-y-1 flex-1 cursor-pointer" onclick="window.setActiveSession('${s.id}')">
                         <div class="flex items-center space-x-2">
                             <h4 class="font-extrabold text-xs text-white">${s.name}</h4>
+                            ${scorePreview}
                             ${resultBadge}
                             ${isActive ? '<span class="text-[9px] bg-tactical-myTeam text-white px-2 py-0.5 rounded-full font-extrabold tracking-wide">ACTIVE</span>' : ''}
                         </div>
