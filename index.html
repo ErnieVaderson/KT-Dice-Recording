@@ -69,26 +69,26 @@
 </head>
 <body class="bg-tactical-900 min-h-screen flex flex-col justify-between selection:bg-blue-500 selection:text-white">
 
-    <header class="sticky top-0 z-50 kill-team-header px-4 py-3 shadow-2xl">
+    <header class="sticky top-0 z-50 kill-team-header px-4 py-2.5 shadow-2xl">
         <div class="flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
-                <button type="button" onclick="window.toggleLanguage()" class="px-2 py-1.5 bg-tactical-800 rounded-lg border border-tactical-600 hover:bg-tactical-700 text-gray-300 font-bold text-[10px] shadow-sm tactile-btn flex items-center shrink-0 transition" title="Toggle Language">
+            <div class="flex items-center space-x-2">
+                <button type="button" onclick="window.toggleLanguage()" class="px-2 py-1 bg-tactical-800 rounded-lg border border-tactical-600 hover:bg-tactical-700 text-gray-300 font-bold text-[10px] shadow-sm tactile-btn flex items-center shrink-0 transition" title="Toggle Language">
                     <i class="fa-solid fa-language mr-1 text-blue-400"></i> <span id="lang-indicator">EN</span>
                 </button>
-                <div class="w-9 h-9 rounded-xl bg-tactical-myTeam flex items-center justify-center text-white font-black text-base shadow-lg border border-blue-400">
+                <div class="w-7 h-7 rounded-lg bg-tactical-myTeam flex items-center justify-center text-white font-black text-sm shadow-md border border-blue-400 shrink-0">
                     <i class="fa-solid fa-skull"></i>
                 </div>
-                <div>
-                    <h1 class="font-extrabold text-xs uppercase tracking-widest text-blue-400" data-i18n="title">Kill Team</h1>
-                    <p id="active-session-label" class="text-[11px] text-white font-black truncate max-w-[130px]" data-i18n="no_game">No Game Selected</p>
+                <div class="leading-tight">
+                    <h1 class="font-extrabold text-[10px] uppercase tracking-wider text-blue-400" data-i18n="title">Kill Team</h1>
+                    <p id="active-session-label" class="text-[10px] text-white font-black truncate max-w-[100px] sm:max-w-[130px]" data-i18n="no_game">No Game Selected</p>
                 </div>
             </div>
             <div class="flex items-center space-x-2">
-                <div id="cloud-sync-status" class="text-[10px] text-blue-400 bg-blue-950/60 px-2.5 py-1 rounded-lg border border-blue-800/60 font-mono flex items-center space-x-1.5">
+                <div id="cloud-sync-status" class="text-[10px] text-blue-400 bg-blue-950/60 px-2 py-1 rounded-lg border border-blue-800/60 font-mono flex items-center space-x-1.5">
                     <i class="fa-solid fa-cloud-arrow-up text-[10px]"></i>
-                    <span id="cloud-status-text" data-i18n="cloud_saved">Cloud Saved</span>
+                    <span id="cloud-status-text" class="hidden sm:inline" data-i18n="cloud_saved">Cloud Saved</span>
                 </div>
-                <button type="button" onclick="window.toggleArchiveModal()" class="px-2.5 py-1.5 rounded-xl bg-tactical-700/80 hover:bg-tactical-600 text-gray-300 text-xs font-bold transition border border-tactical-600 flex items-center space-x-1 shadow-md tactile-btn" title="Archived Games">
+                <button type="button" onclick="window.toggleArchiveModal()" class="px-2 py-1 rounded-lg bg-tactical-700/80 hover:bg-tactical-600 text-gray-300 text-xs font-bold transition border border-tactical-600 flex items-center space-x-1 shadow-md tactile-btn" title="Archived Games">
                     <i class="fa-solid fa-box-archive text-xs"></i>
                     <span id="archive-count-badge" class="text-[10px] bg-tactical-900 px-1.5 py-0.2 rounded-full font-mono">0</span>
                 </button>
@@ -99,22 +99,21 @@
     <main class="flex-1 max-w-md w-full mx-auto p-4 pb-28 overflow-y-auto">
 
         <section id="view-sessions" class="space-y-4">
-            <div class="kill-team-badge rounded-2xl p-4 shadow-xl relative overflow-hidden blue-glow">
-                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-tactical-myTeam/10 rounded-full blur-xl pointer-events-none"></div>
-                <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-2xl bg-tactical-myTeam/20 border border-tactical-myTeam/50 flex items-center justify-center text-tactical-myTeam text-xl shadow-inner">
+            <div class="kill-team-badge rounded-2xl p-3 shadow-xl relative overflow-hidden blue-glow flex items-center">
+                <div class="absolute -right-6 -bottom-6 w-16 h-16 bg-tactical-myTeam/10 rounded-full blur-xl pointer-events-none"></div>
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-tactical-myTeam/20 border border-tactical-myTeam/50 flex items-center justify-center text-tactical-myTeam text-sm shadow-inner shrink-0">
                         <i class="fa-solid fa-crosshairs"></i>
                     </div>
                     <div>
-                        <h2 class="font-black text-sm text-white uppercase tracking-wider" data-i18n="wh_kill_team">Warhammer Kill Team</h2>
-                        <p class="text-[11px] text-gray-400" data-i18n="secure_cloud">Secure Cloud-Saved Dice Odds</p>
+                        <h2 class="font-black text-xs text-white uppercase tracking-wider" data-i18n="wh_kill_team">Warhammer Kill Team Log</h2>
                     </div>
                 </div>
             </div>
 
             <div class="bg-tactical-800/90 border border-tactical-700/80 rounded-2xl p-4 shadow-xl backdrop-blur space-y-3">
                 <h3 class="text-xs font-extrabold uppercase tracking-wider text-tactical-myTeam flex items-center">
-                    <i class="fa-solid fa-plus-circle mr-1.5"></i> <span data-i18n="start_new">Start New Game Session</span>
+                    <i class="fa-solid fa-plus-circle mr-1.5"></i> <span data-i18n="start_new">Add New Game Session Record</span>
                 </h3>
                 <div class="space-y-2.5">
                     <input type="text" id="new-game-name" data-i18n-placeholder="placeholder_game" placeholder="e.g., Match 1 - Table 4" 
@@ -300,7 +299,7 @@
                                     </div>
                                     <div>
                                         <span class="text-[9px] text-blue-400 block font-extrabold" data-i18n="total">Total</span>
-                                        <input type="number" min="0" max="30" id="score-my-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-blue-500/60 rounded text-center text-xs font-mono font-bold text-blue-400 py-1 focus:outline-none">
+                                        <input type="number" min="0" max="30" id="score-my-total" readonly class="w-full bg-tactical-900/60 border border-blue-500/40 rounded text-center text-xs font-mono font-bold text-blue-400 py-1 focus:outline-none cursor-not-allowed">
                                     </div>
                                 </div>
                             </div>
@@ -322,7 +321,7 @@
                                     </div>
                                     <div>
                                         <span class="text-[9px] text-orange-400 block font-extrabold" data-i18n="total">Total</span>
-                                        <input type="number" min="0" max="30" id="score-opp-total" onchange="window.updateScores()" class="w-full bg-tactical-900 border border-orange-500/60 rounded text-center text-xs font-mono font-bold text-orange-400 py-1 focus:outline-none">
+                                        <input type="number" min="0" max="30" id="score-opp-total" readonly class="w-full bg-tactical-900/60 border border-orange-500/40 rounded text-center text-xs font-mono font-bold text-orange-400 py-1 focus:outline-none cursor-not-allowed">
                                     </div>
                                 </div>
                             </div>
@@ -463,8 +462,8 @@
         const i18n = {
             en: {
                 title: "Kill Team", no_game: "No Game Selected", cloud_saved: "Cloud Saved", local_device: "Local Device",
-                archived_games: "Archived Games", wh_kill_team: "Warhammer Kill Team", secure_cloud: "Secure Cloud-Saved Dice Odds",
-                start_new: "Start New Game Session", placeholder_game: "e.g., Match 1 - Table 4", create_game: "Create Game",
+                archived_games: "Archived Games", wh_kill_team: "Warhammer Kill Team Log", secure_cloud: "Secure Cloud-Saved Dice Odds",
+                start_new: "Add New Game Session Record", placeholder_game: "e.g., Match 1 - Table 4", create_game: "Create Game",
                 your_sessions: "Your Game Sessions", logging_for: "Logging for:", my_team: "My Team", opponent: "Opponent",
                 attack_roll: "Attack Roll", defense_roll: "Defense Roll", success: "Success", critical: "Critical", none: "None",
                 tap_dice: "Tap 1-6 dice below...", clear: "Clear", confirm: "Confirm", games_tab: "Games", log_tab: "Log",
@@ -484,8 +483,8 @@
             },
             zh: {
                 title: "殺戮小隊", no_game: "未選擇遊戲", cloud_saved: "雲端已儲存", local_device: "本機裝置",
-                archived_games: "已封存的遊戲", wh_kill_team: "戰鎚 殺戮小隊", secure_cloud: "安全的雲端骰子機率紀錄",
-                start_new: "開始新遊戲", placeholder_game: "例如：第一場 - 第四桌", create_game: "建立遊戲",
+                archived_games: "已封存的遊戲", wh_kill_team: "戰鎚殺戮小隊紀錄", secure_cloud: "安全的雲端骰子機率紀錄",
+                start_new: "新增遊戲紀錄", placeholder_game: "例如：第一場 - 第四桌", create_game: "建立遊戲",
                 your_sessions: "你的遊戲紀錄", logging_for: "紀錄對象：", my_team: "我的隊伍", opponent: "對手",
                 attack_roll: "攻擊擲骰", defense_roll: "防禦擲骰", success: "成功", critical: "爆擊", none: "無",
                 tap_dice: "點擊下方 1-6 點數...", clear: "清除", confirm: "確認", games_tab: "遊戲", log_tab: "紀錄",
@@ -826,7 +825,15 @@
 
         window.clearActiveSessionLogs = function() {
             const session = getActiveSession();
-            if (session) { session.rolls = []; saveAppData(); updateUI(); showToast(window.t('toast_reset')); }
+            if (session) { 
+                session.rolls = []; 
+                session.result = 'active';
+                session.scores = { myCrit: 0, myTac: 0, myKill: 0, myTotal: 0, oppCrit: 0, oppTac: 0, oppKill: 0, oppTotal: 0 };
+                saveAppData(); 
+                updateUI(); 
+                renderSessionsList();
+                showToast(window.t('toast_reset')); 
+            }
         };
 
         window.updateMatchMeta = function() {
@@ -851,11 +858,13 @@
             const myCrit = parseInt(document.getElementById('score-my-crit').value) || 0;
             const myTac = parseInt(document.getElementById('score-my-tac').value) || 0;
             const myKill = parseInt(document.getElementById('score-my-kill').value) || 0;
-            let myTotal = parseInt(document.getElementById('score-my-total').value) || (myCrit + myTac + myKill);
+            let myTotal = myCrit + myTac + myKill;
+
             const oppCrit = parseInt(document.getElementById('score-opp-crit').value) || 0;
             const oppTac = parseInt(document.getElementById('score-opp-tac').value) || 0;
             const oppKill = parseInt(document.getElementById('score-opp-kill').value) || 0;
-            let oppTotal = parseInt(document.getElementById('score-opp-total').value) || (oppCrit + oppTac + oppKill);
+            let oppTotal = oppCrit + oppTac + oppKill;
+
             session.scores = { myCrit, myTac, myKill, myTotal, oppCrit, oppTac, oppKill, oppTotal };
             document.getElementById('score-my-total').value = myTotal;
             document.getElementById('score-opp-total').value = oppTotal;
